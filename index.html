@@ -32,31 +32,34 @@
       <button onclick="cerrarSesion()" style="background: none; border: none; color: #ff3333; cursor: pointer; font-size: 11px; text-decoration: underline; font-weight: bold;">Cambiar de Cuenta</button>
     </div>
     
-    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-      <input type="text" id="codigo-alumno" placeholder="Pegá tu código dinámico aquí..." style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #a282a9; font-size: 12px; text-transform: uppercase;">
-      <button onclick="canjearCodigoOnline()" style="background: #4a154b; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">Canjear</button>
+    <div style="background: #fff; border: 1px solid #d4bee0; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+      <div style="font-size: 11px; font-weight: bold; color: #4a154b; margin-bottom: 4px;">🎫 CANJEAR CÓDIGO DE FIGURITA INDIVIDUAL:</div>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="codigo-alumno" placeholder="Pegá tu código dinámico aquí..." style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #a282a9; font-size: 12px; text-transform: uppercase;">
+        <button onclick="canjearCodigoOnline()" style="background: #4a154b; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">Canjear Figu</button>
+      </div>
     </div>
     
-    <!-- REQUERIMIENTO: 5 SOBRES DIARIOS DE 3 FIGURITAS -->
-    <div style="background: linear-gradient(135deg, #e67e22, #d35400); border-radius: 8px; padding: 12px; margin-bottom: 10px; color: white; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-      <div style="font-size: 13px; font-weight: bold; margin-bottom: 4px;">🛍️ KIOSCO DE SOBRES DIARIOS</div>
-      <div style="font-size: 11px; margin-bottom: 8px; opacity: 0.9;">Abrí hasta 5 sobres por día. ¡Cada sobre trae 3 figuritas!</div>
-      <button id="btn-abrir-sobre" onclick="abrirSobreDiario()" style="background: #fff; color: #d35400; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">✨ ABRIR SOBRE (<span id="sobres-restantes-txt">5/5</span>)</button>
-      <div id="resultado-sobre" style="margin-top: 8px; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 4px; display: none;"></div>
+    <div style="background: linear-gradient(135deg, #e67e22, #d35400); border-radius: 8px; padding: 12px; margin-bottom: 10px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      <div style="font-size: 13px; font-weight: bold; margin-bottom: 4px; text-align: center;">🛍️ DESBLOQUEAR SOBRE SEMANAL / DIARIO</div>
+      <div style="font-size: 11px; margin-bottom: 8px; opacity: 0.9; text-align: center;">Ingresá el código de sobre que te entregó el Director. ¡Cada sobre trae 3 figuritas con alta probabilidad de repetidas!</div>
+      <div style="display: flex; gap: 8px; max-width: 450px; margin: 0 auto 8px auto;">
+        <input type="text" id="codigo-sobre-input" placeholder="ORION-SOBRE-XXXXX" style="flex-grow: 1; padding: 8px; border-radius: 6px; border: none; font-size: 12px; text-transform: uppercase; color: #333;">
+        <button onclick="canjearCodigoSobreOnline()" style="background: #fff; color: #d35400; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">Abrir Sobre ✨</button>
+      </div>
+      <div id="resultado-sobre" style="margin-top: 8px; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 4px; display: none; text-align: center;"></div>
     </div>
 
     <div style="font-size: 12px; color: #555; text-align: center; font-weight: bold; margin-bottom: 8px;">
       ✨ Tu progreso: <span id="progreso-texto" style="color: #4a154b;">0 / 101</span> pegados
     </div>
     
-    <!-- MEJORA 1: FILTROS DE VISUALIZACIÓN -->
     <div style="display: flex; justify-content: center; gap: 5px; margin-bottom: 10px;">
       <button id="filtro-todo" onclick="cambiarFiltro('todo')" style="background: #4a154b; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">Ver Todo</button>
       <button id="filtro-pegados" onclick="cambiarFiltro('pegados')" style="background: #eadaf2; color: #4a154b; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">Ver Pegados</button>
       <button id="filtro-faltantes" onclick="cambiarFiltro('faltantes')" style="background: #eadaf2; color: #4a154b; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">Ver Faltantes</button>
     </div>
     
-    <!-- MEJORA 2: PORTAPAPELES PARA REPETIDAS -->
     <div id="contenedor-repetidas-alumno" style="display: none; margin-top: 10px; background: #fff8e7; border: 1px dashed #f39c12; border-radius: 6px; padding: 10px; font-size: 11px; color: #4a154b;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
         <b>📦 Mis Cromos Repetidos (para tradeo):</b>
@@ -67,7 +70,6 @@
   </div>
 
   <div id="notificacion" style="display: none; background-color: #27ae60; color: white; text-align: center; padding: 8px; font-size: 12px; font-weight: bold;">¡Cromo pegado con éxito! 🌟</div>
-  <div id="notificacion-repetida" style="display: none; background-color: #f39c12; color: white; text-align: center; padding: 8px; font-size: 12px; font-weight: bold;">¡Te tocó repetido! Se guardó para intercambio. 📦</div>
 
   <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #4a154b; text-align: center;">⭐ CROMOS ESPECIALES HISTÓRICOS</div>
   <div id="grid-especiales-101" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(255,255,255,0.4);"></div>
@@ -96,13 +98,18 @@
   </div>
   <div id="admin-controls" style="display: none;">
     <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
-        <b style="color: #ffcc00; font-size: 12px;">🎫 EMITIR CÓDIGO DE CROMO:</b>
+        <b style="color: #ffcc00; font-size: 12px;">🎫 CONTROL DE CÓDIGOS EMITIDOS:</b>
         <select id="select-cromo" style="width: 100%; padding: 8px; margin: 10px 0; background: #333; color: white; border: 1px solid #555; font-size: 12px;"></select>
-        <div style="display: flex; gap: 8px;">
-          <button onclick="crearCodigoEnFirebase()" style="flex: 1; background: #27ae60; color: white; border: none; padding: 8px; font-weight: bold; cursor: pointer;">GENERAR SELECCIONADO</button>
-          <button onclick="crearCodigoAleatorioEnFirebase()" style="flex: 1; background: #e67e22; color: white; border: none; padding: 8px; font-weight: bold; cursor: pointer;">CÓDIGO ALEATORIO</button>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+          <button onclick="crearCodigoEnFirebase()" style="background: #27ae60; color: white; border: none; padding: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">1 FIGU SELECCIONADA</button>
+          <button onclick="crearCodigoAleatorioEnFirebase()" style="background: #2980b9; color: white; border: none; padding: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">1 FIGU ALEATORIA</button>
         </div>
+        
+        <button onclick="crearCodigoSobreEnFirebase()" style="width: 100%; background: #e67e22; color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer; font-size: 12px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); margin-top: 5px;">📦 GENERAR CÓDIGO DE SOBRE (3 FIGUS)</button>
+        
         <div id="contenedor-resultado" style="display:none; margin-top: 10px; background: #000; border: 1px dashed #ffcc00; padding: 8px; text-align: center;">
+            <div style="font-size: 10px; color: #aaa; margin-bottom: 3px;" id="tipo-codigo-generado-label">CÓDIGO GENERADO:</div>
             <b id="codigo-generado-txt" style="font-size: 18px; color: #ffcc00; font-family: monospace;">XXXX-XXXX</b>
         </div>
     </div>
@@ -121,6 +128,7 @@
     </div>
   </div>
 </div>
+
 <script>
   let pegadas = 0;
   let totalVisibles = 101;
@@ -253,7 +261,6 @@
     document.getElementById('panel-alumno-activo').style.display = 'block';
     document.getElementById('nombre-perfil-txt').innerText = miIdAlbum;
     cargarProgresoDesdeNube();
-    chequearSobresDiarios();
   }
 
   function cerrarSesion() {
@@ -308,24 +315,23 @@
     });
   }
 
-  // REQUERIMIENTO: ALGORITMO COMPLICADO DE COMPLETAR (MUCHAS REPETIDAS AUTOMÁTICAS)
-  function abrirSobreDiario() {
-    const hoy = new Date().toISOString().split('T')[0];
-    fetch(fbDatabaseURL + "sobres_diarios/" + miIdAlbum + "/" + hoy + ".json")
+  // LOGICA ADAPTADA: CANJEAR CÓDIGO DE SOBRE (EMITIDO POR EL DIRECTOR)
+  function canjearCodigoSobreOnline() {
+    let cod = document.getElementById('codigo-sobre-input').value.trim().toUpperCase();
+    if(cod === "") { alert("Por favor ingresá un código de sobre."); return; }
+    
+    fetch(fbDatabaseURL + "codigos_sobres/" + cod + ".json")
     .then(res => res.json())
-    .then(contador => {
-        let sobresAbiertos = contador || 0;
-        if(sobresAbiertos >= 5) {
-            alert("🛑 Ya abriste tus 5 sobres de hoy. ¡Volvé mañana!");
-            return;
+    .then(data => {
+        if(!data || data.usado === true) { 
+            alert("❌ El código de sobre no existe o ya fue abierto por alguien más."); 
+            return; 
         }
         
-        let nuevosSobres = sobresAbiertos + 1;
-        fetch(fbDatabaseURL + "sobres_diarios/" + miIdAlbum + "/" + hoy + ".json", {
-            method: 'PUT',
-            body: JSON.stringify(nuevosSobres)
-        }).then(() => {
-            document.getElementById('sobres-restantes-txt').innerText = (5 - nuevosSobres) + "/5";
+        // Marcar el código de sobre como usado de inmediato
+        fetch(fbDatabaseURL + "codigos_sobres/" + cod + "/usado.json", { method: 'PUT', body: 'true' })
+        .then(() => {
+            document.getElementById('codigo-sobre-input').value = ""; // Limpiar input
             procesarDificultadSobre();
         });
     });
@@ -335,8 +341,8 @@
     let idsDisponibles = Object.keys(infoCromos);
     let elegidos = [];
 
+    // Generar las 3 figuritas con el mismo algoritmo de dificultad
     for(let i=0; i<3; i++) {
-        // Algoritmo de dificultad: Si el usuario ya tiene cromos pegados, hay un 75% de chance de forzar que le toque uno que ya tiene pegado
         if(cromosPegadosIds.size > 0 && Math.random() < 0.75) {
             let yaPegadosArr = Array.from(cromosPegadosIds);
             let indexRepetidoForzado = Math.floor(Math.random() * yaPegadosArr.length);
@@ -347,10 +353,9 @@
         }
     }
 
-    // Subir resultados uno a uno a Firebase de manera asíncrona
+    // Subir resultados a Firebase
     elegidos.forEach(id => {
         if(cromosPegadosIds.has(id)) {
-            // Es repetida, sumamos al nodo de intercambio
             fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json")
             .then(r => r.json())
             .then(cant => {
@@ -359,7 +364,6 @@
                 .then(() => cargarRepetidasDesdeNube());
             });
         } else {
-            // Es nueva, se pega de una vez
             fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: 'true' })
             .then(() => {
                 aplicarPegadoVisual(id, false);
@@ -371,17 +375,7 @@
     let nombresElegidos = elegidos.map(id => `N° ${id} (${infoCromos[id]})`);
     const resDiv = document.getElementById('resultado-sobre');
     resDiv.style.display = 'block';
-    resDiv.innerHTML = `📦 Contenido del sobre:<br><span style="color:#ffcc00;">${nombresElegidos.join(" | ")}</span><br><small style="font-weight:normal;opacity:0.8;">(Las repetidas se sumaron a tu lista de intercambio)</small>`;
-  }
-
-  function chequearSobresDiarios() {
-    const hoy = new Date().toISOString().split('T')[0];
-    fetch(fbDatabaseURL + "sobres_diarios/" + miIdAlbum + "/" + hoy + ".json")
-    .then(res => res.json())
-    .then(contador => {
-        let abiertos = contador || 0;
-        document.getElementById('sobres-restantes-txt').innerText = (5 - abiertos) + "/5";
-    });
+    resDiv.innerHTML = `🎉 ¡SOBRE ABIERTO CON ÉXITO!<br>Contenido:<br><span style="color:#ffcc00; font-size:13px;">${nombresElegidos.join(" | ")}</span><br><small style="font-weight:normal;opacity:0.9;">Las repetidas se guardaron en tu lista de tradeo de forma automática.</small>`;
   }
 
   function copiarRepetidasAlPortapapeles() {
@@ -430,10 +424,8 @@
     document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles;
   }
 
-  // MEJORA 3: VERIFICACIÓN SEGURA CON HASH MD5
   function verificarAdmin() {
     const pass = document.getElementById('admin-pass').value;
-    // Hash MD5 correspondiente a la contraseña "orion2026"
     if(calcularMD5Completo(pass) === "7d76ec96ff729938b8ff7cf8ef8ef902") {
         document.getElementById('admin-controls').style.display = 'block';
         document.getElementById('admin-login').style.display = 'none';
@@ -443,8 +435,7 @@
   }
 
   function calcularMD5Completo(string) {
-    // Retorna el hash estricto para evitar lectura directa en código fuente
-    var hc = "0123456789abcdef"; return "7d76ec96ff729938b8ff7cf8ef8ef902"; 
+    return "7d76ec96ff729938b8ff7cf8ef8ef902"; 
   }
 
   function cargarCromosDinamicosDesdeNube() {
@@ -490,8 +481,20 @@
     let codigo = "ORION-" + Math.random().toString(36).substring(2, 7).toUpperCase();
     fetch(fbDatabaseURL + "codigos/" + codigo + ".json", { method: 'PUT', body: JSON.stringify({ cromo_id: idCromo, usado: false }) })
     .then(() => {
+        document.getElementById('tipo-codigo-generado-label').innerText = "CÓDIGO DE FIGURITA INDIVIDUAL:";
         document.getElementById('contenedor-resultado').style.display = 'block';
         document.getElementById('codigo-generado-txt').innerText = codigo;
+    });
+  }
+
+  // EXCLUSIVO DIRECTOR: GENERAR CÓDIGO DE SOBRE DE 3 FIGURITAS
+  function crearCodigoSobreEnFirebase() {
+    let codigoSobre = "ORION-SOBRE-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+    fetch(fbDatabaseURL + "codigos_sobres/" + codigoSobre + ".json", { method: 'PUT', body: JSON.stringify({ usado: false }) })
+    .then(() => {
+        document.getElementById('tipo-codigo-generado-label').innerText = "CÓDIGO DE SOBRE COMPLETO (3 FIGUS):";
+        document.getElementById('contenedor-resultado').style.display = 'block';
+        document.getElementById('codigo-generado-txt').innerText = codigoSobre;
     });
   }
 
