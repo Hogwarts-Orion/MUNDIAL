@@ -42,7 +42,7 @@
     
     <div style="background: linear-gradient(135deg, #e67e22, #d35400); border-radius: 8px; padding: 12px; margin-bottom: 10px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
       <div style="font-size: 13px; font-weight: bold; margin-bottom: 4px; text-align: center;">🛍️ DESBLOQUEAR SOBRE SEMANAL / DIARIO</div>
-      <div style="font-size: 11px; margin-bottom: 8px; opacity: 0.9; text-align: center;">Ingresá el código de sobre que te entregó el Director. ¡Cada sobre trae 3 figuritas con alta probabilidad de repetidas!</div>
+      <div style="font-size: 11px; margin-bottom: 8px; opacity: 0.9; text-align: center;">Ingresá el código de sobre que te entregó el Director. ¡Cada sobre trae 3 figuritas con dificultad escalonada según tu progreso!</div>
       <div style="display: flex; gap: 8px; max-width: 450px; margin: 0 auto 8px auto;">
         <input type="text" id="codigo-sobre-input" placeholder="ORION-SOBRE-XXXXX" style="flex-grow: 1; padding: 8px; border-radius: 6px; border: none; font-size: 12px; text-transform: uppercase; color: #333;">
         <button onclick="canjearCodigoSobreOnline()" style="background: #fff; color: #d35400; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">Abrir Sobre ✨</button>
@@ -113,6 +113,7 @@
             <b id="codigo-generado-txt" style="font-size: 18px; color: #ffcc00; font-family: monospace;">XXXX-XXXX</b>
         </div>
     </div>
+
     <div style="background: #111; padding: 12px; border-radius: 6px;">
         <b style="color: #ffcc00; font-size: 12px;">➕ CREAR CROMO PERSONALIZADO DE ALUMNO:</b>
         <input type="text" id="nuevo-cromo-nombre" placeholder="Nombre..." style="width: 100%; padding: 6px; margin: 6px 0; box-sizing: border-box;">
@@ -315,7 +316,6 @@
     });
   }
 
-  // LOGICA ADAPTADA: CANJEAR CÓDIGO DE SOBRE (EMITIDO POR EL DIRECTOR)
   function canjearCodigoSobreOnline() {
     let cod = document.getElementById('codigo-sobre-input').value.trim().toUpperCase();
     if(cod === "") { alert("Por favor ingresá un código de sobre."); return; }
@@ -324,36 +324,59 @@
     .then(res => res.json())
     .then(data => {
         if(!data || data.usado === true) { 
-            alert("❌ El código de sobre no existe o ya fue abierto por alguien más."); 
+            alert("❌ El código de sobre no existe o ya fue abierto."); 
             return; 
         }
         
-        // Marcar el código de sobre como usado de inmediato
         fetch(fbDatabaseURL + "codigos_sobres/" + cod + "/usado.json", { method: 'PUT', body: 'true' })
         .then(() => {
-            document.getElementById('codigo-sobre-input').value = ""; // Limpiar input
+            document.getElementById('codigo-sobre-input').value = "";
             procesarDificultadSobre();
         });
     });
   }
 
+  // ALGORITMO DE DIFICULTAD ESCALONADA DINÁMICA
   function procesarDificultadSobre() {
-    let idsDisponibles = Object.keys(infoCromos);
     let elegidos = [];
+    let porcentajeProgreso = cromosPegadosIds.size / totalVisibles; 
 
-    // Generar las 3 figuritas con el mismo algoritmo de dificultad
+    // Establecer posibilidad de forzar una repetida según lo lleno que esté su álbum
+    let probForzarRepetida = 0.20; // 20% si recién empieza
+    if (porcentajeProgreso > 0.30) probForzarRepetida = 0.50; // 50% a mitad de camino
+    if (porcentajeProgreso > 0.70) probForzarRepetida = 0.85; // 85% si le queda poco
+
     for(let i=0; i<3; i++) {
-        if(cromosPegadosIds.size > 0 && Math.random() < 0.75) {
-            let yaPegadosArr = Array.from(cromosPegadosIds);
-            let indexRepetidoForzado = Math.floor(Math.random() * yaPegadosArr.length);
-            elegidos.push(yaPegadosArr[indexRepetidoForzado]);
+        let cromoIdFinal = "1";
+        
+        // 1. Filtrado ultra estricto para las legendarias fijas (Harry y Dumbledore)
+        let esLegendario = Math.random() < 0.015; // 1.5% de chances totales por slot
+        
+        if (esLegendario) {
+            cromoIdFinal = Math.random() < 0.5 ? "100" : "101";
         } else {
-            let indexAzar = Math.floor(Math.random() * idsDisponibles.length);
-            elegidos.push(idsDisponibles[indexAzar]);
+            // 2. Si el sistema decide tirarle una repetida de forma inteligente
+            if (Math.random() < probForzarRepetida && cromosPegadosIds.size > 0) {
+                let yaPegadosComunes = Array.from(cromosPegadosIds).filter(id => id !== "100" && id !== "101");
+                
+                if (yaPegadosComunes.length > 0) {
+                    // Le da un cromo repetido de los comunes que ya tiene pegados
+                    let idx = Math.floor(Math.random() * yaPegadosComunes.length);
+                    cromoIdFinal = yaPegadosComunes[idx];
+                } else {
+                    let numComun = Math.floor(Math.random() * 99) + 1;
+                    cromoIdFinal = String(numComun);
+                }
+            } else {
+                // 3. Si le toca un cromo normal al azar total
+                let numComun = Math.floor(Math.random() * 99) + 1;
+                cromoIdFinal = String(numComun);
+            }
         }
+        elegidos.push(cromoIdFinal);
     }
 
-    // Subir resultados a Firebase
+    // Guardado de progresos y actualización inmediata en la base de datos
     elegidos.forEach(id => {
         if(cromosPegadosIds.has(id)) {
             fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json")
@@ -375,7 +398,7 @@
     let nombresElegidos = elegidos.map(id => `N° ${id} (${infoCromos[id]})`);
     const resDiv = document.getElementById('resultado-sobre');
     resDiv.style.display = 'block';
-    resDiv.innerHTML = `🎉 ¡SOBRE ABIERTO CON ÉXITO!<br>Contenido:<br><span style="color:#ffcc00; font-size:13px;">${nombresElegidos.join(" | ")}</span><br><small style="font-weight:normal;opacity:0.9;">Las repetidas se guardaron en tu lista de tradeo de forma automática.</small>`;
+    resDiv.innerHTML = `🎉 ¡SOBRE ABIERTO CON ÉXITO!<br>Contenido:<br><span style="color:#ffcc00; font-size:13px;">${nombresElegidos.join(" | ")}</span><br><small style="font-weight:normal;opacity:0.9;">¡Las cartas repetidas se agregaron a tu inventario de tradeos!</small>`;
   }
 
   function copiarRepetidasAlPortapapeles() {
@@ -487,7 +510,6 @@
     });
   }
 
-  // EXCLUSIVO DIRECTOR: GENERAR CÓDIGO DE SOBRE DE 3 FIGURITAS
   function crearCodigoSobreEnFirebase() {
     let codigoSobre = "ORION-SOBRE-" + Math.random().toString(36).substring(2, 7).toUpperCase();
     fetch(fbDatabaseURL + "codigos_sobres/" + codigoSobre + ".json", { method: 'PUT', body: JSON.stringify({ usado: false }) })
