@@ -51,7 +51,7 @@
     </div>
 
     <div style="font-size: 12px; color: #555; text-align: center; font-weight: bold; margin-bottom: 8px;">
-      ✨ Tu progreso: <span id="progreso-texto" style="color: #4a154b;">0 / 101</span> pegados
+      ✨ Tu progreso: <span id="progreso-texto" style="color: #4a154b;">0 / 126</span> pegados
     </div>
     
     <div style="display: flex; justify-content: center; gap: 5px; margin-bottom: 10px;">
@@ -74,6 +74,21 @@
   <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #4a154b; text-align: center;">⭐ CROMOS ESPECIALES HISTÓRICOS</div>
   <div id="grid-especiales-101" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(255,255,255,0.4);"></div>
 
+  <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #311b92; text-align: center; border-top: 2px solid #ffcc00;">🧛‍♂️ VAMPIROS FAMOSOS</div>
+  <div id="grid-vampiros" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(49,27,146,0.05);"></div>
+
+  <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #ad1457; text-align: center; border-top: 2px solid #ffcc00;">🦅 ARPÍAS FAMOSAS</div>
+  <div id="grid-arpias" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(173,20,87,0.05);"></div>
+
+  <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #e65100; text-align: center; border-top: 2px solid #ffcc00;">👹 GIGANTES FAMOSOS</div>
+  <div id="grid-gigantes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(230,81,0,0.05);"></div>
+
+  <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #004d40; text-align: center; border-top: 2px solid #ffcc00;">🪙 DUENDES FAMOSOS</div>
+  <div id="grid-duendes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,77,64,0.05);"></div>
+
+  <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #b71c1c; text-align: center; border-top: 2px solid #ffcc00;">🐉 DRAGONES FAMOSOS</div>
+  <div id="grid-dragones" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(183,28,28,0.05);"></div>
+
   <div style="padding: 12px 20px; font-size: 14px; font-weight: bold; color: #ffcc00; background-color: #2c0c2e; text-align: center; border-top: 4px solid #ffcc00;">🏰 ALUMNOS DE HOGWARTS ORIÓN</div>
   <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: white; background-color: #7f0909;">🦁 CASA GRYFFINDOR</div>
   <div id="grid-casa-gryffindor" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(127,9,9,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
@@ -88,6 +103,10 @@
   <div id="grid-casa-ravenclaw" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,51,102,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
 
   <div style="background-color: #4a154b; padding: 12px; color: #ffcc00; font-weight: bold; font-size: 11px; text-align: center; border-top: 3px solid #ffcc00;">🏰 HOGWARTS ORIÓN © 2026</div>
+</div>
+
+<div style="font-size: 12px; color: #ff9999; margin-top: 10px; max-width: 650px; text-align: center; width: 100%;">
+  ⚠️ <i>Los hechizos de duelo cargados en el backend quedan reservados exclusivamente para las mecánicas del sistema interactivo de combates del Director.</i>
 </div>
 
 <div style="width: 100%; max-width: 650px; margin-top: 30px; background: #222; border: 3px solid #ff3333; border-radius: 12px; padding: 15px; color: white; box-sizing: border-box;">
@@ -132,7 +151,7 @@
 
 <script>
   let pegadas = 0;
-  let totalVisibles = 101;
+  let totalVisibles = 126;
   const fbDatabaseURL = "https://album-75178-default-rtdb.firebaseio.com/";
   let miIdAlbum = ""; 
   let filtroActual = "todo"; 
@@ -160,7 +179,12 @@
     "86": "Dorcas Wellbeloved", "87": "Thaddeus Thurkell", "88": "Celestina Warbeck", "89": "Alberta Toothill", "90": "Sacharissa Tugwood",
     "91": "Wilfred Elphick", "92": "Xavier Rastrick", "93": "Heathcote Barbary", "94": "Merton Graves", "95": "Yardley Platt",
     "96": "Hengist De Woodcroft", "97": "Alberic Grunnion", "98": "Dymphna Furmage", "99": "Daisy Dodderidge", "100": "Harry Potter",
-    "101": "Albus Dumbledore"
+    "101": "Albus Dumbledore",
+    "102": "Sir Herbert varney", "103": "Amarillo lestoat", "104": "Lady carmilla sanguina", "105": "Blodwyn bludd", "106": "Conde Vlad Drácula",
+    "107": "Babayaga", "108": "La reina maladora grymm", "109": "Leticia somnolens", "110": "Vieja madre Hubbard", "111": "Cordelia misericordia",
+    "112": "Bran el sediento de sangre", "113": "Cíclope", "114": "Goliath", "115": "Morholt", "116": "Hengist de upper Barton",
+    "117": "Eargit el feo", "118": "Alguff el horroroso", "119": "Ug el falton", "120": "Urg el sucio", "121": "Gringott",
+    "122": "El galés verde común", "123": "Hebrido negro", "124": "Colacuerno húngaro", "125": "Longhorn rumano", "126": "Ridgeback noruego"
   };
 
   const linksPostimagesFijos = {
@@ -197,7 +221,16 @@
     "91": "https://i.postimg.cc/GB3hWPhK/91.jpg", "92": "https://i.postimg.cc/WDpbBmb5/92.jpg", "93": "https://i.postimg.cc/qtBMPcMF/93.jpg",
     "94": "https://i.postimg.cc/Z9YKGPKg/94.jpg", "95": "https://i.postimg.cc/VSsLx9Lp/95.jpg", "96": "https://i.postimg.cc/PL6rTLPM/96.jpg",
     "97": "https://i.postimg.cc/cKD40KrD/97.jpg", "98": "https://i.postimg.cc/v1PHb1cq/98.jpg", "99": "https://i.postimg.cc/94xFC4rN/99.jpg",
-    "100": "https://i.postimg.cc/cKD40Krb/100.jpg", "101": "https://i.postimg.cc/Lqy62qnc/101.jpg"
+    "100": "https://i.postimg.cc/cKD40Krb/100.jpg", "101": "https://i.postimg.cc/Lqy62qnc/101.jpg",
+    "102": "https://i.postimg.cc/jdsd02Bj/102.jpg", "103": "https://i.postimg.cc/dtqtP3g1/103.jpg", "104": "https://i.postimg.cc/ZKTKtnXC/104.jpg",
+    "105": "https://i.postimg.cc/0282Rjhr/105.jpg", "106": "https://i.postimg.cc/ncHcbrNs/106.jpg", "107": "https://i.postimg.cc/kXX9YZtJ/107.jpg",
+    "108": "https://i.postimg.cc/bNN8VM2J/108.jpg", "109": "https://i.postimg.cc/WbbjYKJ1/109.jpg", "110": "https://i.postimg.cc/X7731hyv/110.jpg",
+    "111": "https://i.postimg.cc/gkkdt56x/111.jpg", "112": "https://i.postimg.cc/3JJ7f6Dy/112.jpg", "113": "https://i.postimg.cc/zXX52MRb/113.jpg",
+    "114": "https://i.postimg.cc/bNN8VM2n/114.jpg", "115": "https://i.postimg.cc/m22RpqF7/115.jpg", "116": "https://i.postimg.cc/VLL1ZTbj/116.jpg",
+    "117": "https://i.postimg.cc/X7731hyf/117.jpg", "118": "https://i.postimg.cc/fTTZqF07/118.jpg", "119": "https://i.postimg.cc/TYYGNSWq/119.jpg",
+    "120": "https://i.postimg.cc/X7731hyg/120.jpg", "121": "https://i.postimg.cc/zXX52MRj/121.jpg", "122": "https://i.postimg.cc/yYYBp5Sv/122.jpg",
+    "123": "https://i.postimg.cc/tCCyvfVB/123.jpg", "124": "https://i.postimg.cc/m22RpqFj/124.jpg", "125": "https://i.postimg.cc/m2X4vwQY/125.jpg",
+    "126": "https://i.postimg.cc/Kvqb6Nn7/126.jpg"
   };
 
   let imagenesBaseDatos = {};
@@ -207,7 +240,7 @@
   };
 
   function inicializarAlbumEstructurado() {
-    dibujarEstructuraEspeciales101();
+    dibujarEstructuraEspeciales126();
     cargarCromosDinamicosDesdeNube();
     if(localStorage.getItem('orion_user_name_id')) {
         miIdAlbum = localStorage.getItem('orion_user_name_id');
@@ -215,12 +248,39 @@
     }
   }
 
-  function dibujarEstructuraEspeciales101() {
+  function dibujarEstructuraEspeciales126() {
     const grid101 = document.getElementById('grid-especiales-101');
+    const gridVampiros = document.getElementById('grid-vampiros');
+    const gridArpias = document.getElementById('grid-arpias');
+    const gridGigantes = document.getElementById('grid-gigantes');
+    const gridDuendes = document.getElementById('grid-duendes');
+    const gridDragones = document.getElementById('grid-dragones');
+    
     if(!grid101) return;
     grid101.innerHTML = "";
+    if(gridVampiros) gridVampiros.innerHTML = "";
+    if(gridArpias) gridArpias.innerHTML = "";
+    if(gridGigantes) gridGigantes.innerHTML = "";
+    if(gridDuendes) gridDuendes.innerHTML = "";
+    if(gridDragones) gridDragones.innerHTML = "";
+
     Object.keys(infoCromos).forEach(id => {
-        grid101.insertAdjacentHTML('beforeend', crearHtmlCardSlot(id, infoCromos[id]));
+        const numId = parseInt(id);
+        const cardHtml = crearHtmlCardSlot(id, infoCromos[id]);
+        
+        if (numId >= 102 && numId <= 106) {
+            if(gridVampiros) gridVampiros.insertAdjacentHTML('beforeend', cardHtml);
+        } else if (numId >= 107 && numId <= 111) {
+            if(gridArpias) gridArpias.insertAdjacentHTML('beforeend', cardHtml);
+        } else if (numId >= 112 && numId <= 116) {
+            if(gridGigantes) gridGigantes.insertAdjacentHTML('beforeend', cardHtml);
+        } else if (numId >= 117 && numId <= 121) {
+            if(gridDuendes) gridDuendes.insertAdjacentHTML('beforeend', cardHtml);
+        } else if (numId >= 122 && numId <= 126) {
+            if(gridDragones) gridDragones.insertAdjacentHTML('beforeend', cardHtml);
+        } else {
+            grid101.insertAdjacentHTML('beforeend', cardHtml);
+        }
     });
     rellenarSelectorAdmin();
   }
@@ -336,47 +396,39 @@
     });
   }
 
-  // ALGORITMO DE DIFICULTAD ESCALONADA DINÁMICA
   function procesarDificultadSobre() {
     let elegidos = [];
     let porcentajeProgreso = cromosPegadosIds.size / totalVisibles; 
 
-    // Establecer posibilidad de forzar una repetida según lo lleno que esté su álbum
-    let probForzarRepetida = 0.20; // 20% si recién empieza
-    if (porcentajeProgreso > 0.30) probForzarRepetida = 0.50; // 50% a mitad de camino
-    if (porcentajeProgreso > 0.70) probForzarRepetida = 0.85; // 85% si le queda poco
+    let probForzarRepetida = 0.20; 
+    if (porcentajeProgreso > 0.30) probForzarRepetida = 0.50; 
+    if (porcentajeProgreso > 0.70) probForzarRepetida = 0.85; 
 
     for(let i=0; i<3; i++) {
         let cromoIdFinal = "1";
-        
-        // 1. Filtrado ultra estricto para las legendarias fijas (Harry y Dumbledore)
-        let esLegendario = Math.random() < 0.015; // 1.5% de chances totales por slot
+        let esLegendario = Math.random() < 0.015; 
         
         if (esLegendario) {
             cromoIdFinal = Math.random() < 0.5 ? "100" : "101";
         } else {
-            // 2. Si el sistema decide tirarle una repetida de forma inteligente
             if (Math.random() < probForzarRepetida && cromosPegadosIds.size > 0) {
                 let yaPegadosComunes = Array.from(cromosPegadosIds).filter(id => id !== "100" && id !== "101");
                 
                 if (yaPegadosComunes.length > 0) {
-                    // Le da un cromo repetido de los comunes que ya tiene pegados
                     let idx = Math.floor(Math.random() * yaPegadosComunes.length);
                     cromoIdFinal = yaPegadosComunes[idx];
                 } else {
-                    let numComun = Math.floor(Math.random() * 99) + 1;
-                    cromoIdFinal = String(numComun);
+                    let numAzar = Math.floor(Math.random() * totalVisibles) + 1;
+                    cromoIdFinal = String(numAzar);
                 }
             } else {
-                // 3. Si le toca un cromo normal al azar total
-                let numComun = Math.floor(Math.random() * 99) + 1;
-                cromoIdFinal = String(numComun);
+                let numAzar = Math.floor(Math.random() * totalVisibles) + 1;
+                cromoIdFinal = String(numAzar);
             }
         }
         elegidos.push(cromoIdFinal);
     }
 
-    // Guardado de progresos y actualización inmediata en la base de datos
     elegidos.forEach(id => {
         if(cromosPegadosIds.has(id)) {
             fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json")
