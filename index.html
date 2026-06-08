@@ -73,7 +73,7 @@
       <div style="font-size: 12px; font-weight: bold; color: #4a154b; text-align: center; margin-bottom: 6px;">🎮 MINIJUEGOS MÁGICOS ILIMITADOS (Suma Esencias)</div>
       <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 8px;">
         <button onclick="abrirMinijuego('adivina')" style="background: #2c0c2e; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold;">🔮 Adivina la Criatura</button>
-        <button onclick="abrirMinijuego('giratiempo')" style="background: #4a154b; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold;">⏳ Giratiempo Velor</button>
+        <button onclick="abrirMinijuego('giratiempo')" style="background: #4a154b; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold;">⏳ Giratiempo Veloz</button>
       </div>
       
       <div id="juego-adivina" style="display: none; background: #f3ebf7; padding: 8px; border-radius: 6px; text-align: center; border: 1px dashed #4a154b;">
@@ -109,54 +109,54 @@
 
   <div id="notificacion" style="display: none; background-color: #27ae60; color: white; text-align: center; padding: 8px; font-size: 12px; font-weight: bold;">¡Cromo pegado con éxito! 🌟</div>
 
-  <div id="wrapper-especiales" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-especiales">
     <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #4a154b; text-align: center;">⭐ CROMOS ESPECIALES HISTÓRICOS</div>
     <div id="grid-especiales-101" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(255,255,255,0.4);"></div>
   </div>
 
-  <div id="wrapper-vampiros" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-vampiros">
     <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #311b92; text-align: center; border-top: 2px solid #ffcc00;">🧛‍♂️ VAMPIROS FAMOSOS</div>
     <div id="grid-vampiros" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(49,27,146,0.05);"></div>
   </div>
 
-  <div id="wrapper-arpias" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-arpias">
     <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #ad1457; text-align: center; border-top: 2px solid #ffcc00;">🦅 ARPÍAS FAMOSAS</div>
     <div id="grid-arpias" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(173,20,87,0.05);"></div>
   </div>
 
-  <div id="wrapper-gigantes" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-gigantes">
     <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #e65100; text-align: center; border-top: 2px solid #ffcc00;">👹 GIGANTES FAMOSOS</div>
     <div id="grid-gigantes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(230,81,0,0.05);"></div>
   </div>
 
-  <div id="wrapper-duendes" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-duendes">
     <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #004d40; text-align: center; border-top: 2px solid #ffcc00;">🪙 DUENDES FAMOSOS</div>
     <div id="grid-duendes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,77,64,0.05);"></div>
   </div>
 
-  <div id="wrapper-dragones" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-dragones">
     <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #b71c1c; text-align: center; border-top: 2px solid #ffcc00;">🐉 DRAGONES FAMOSOS</div>
     <div id="grid-dragones" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(183,28,28,0.05);"></div>
   </div>
 
   <div style="padding: 12px 20px; font-size: 14px; font-weight: bold; color: #ffcc00; background-color: #2c0c2e; text-align: center; border-top: 4px solid #ffcc00;">🏰 ALUMNOS DE HOGWARTS ORIÓN</div>
   
-  <div id="wrapper-gryffindor" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-gryffindor">
     <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: white; background-color: #7f0909;">🦁 CASA GRYFFINDOR</div>
     <div id="grid-casa-gryffindor" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(127,9,9,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
   </div>
 
-  <div id="wrapper-slytherin" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-slytherin">
     <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: white; background-color: #0d6217;">🐍 CASA SLYTHERIN</div>
     <div id="grid-casa-slytherin" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(13,98,23,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
   </div>
 
-  <div id="wrapper-hufflepuff" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-hufflepuff">
     <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: #111; background-color: #ffcc00;">🦡 CASA HUFFLEPUFF</div>
     <div id="grid-casa-hufflepuff" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(255,204,0,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #666; text-align: center;">No hay alumnos registrados.</p></div>
   </div>
 
-  <div id="wrapper-ravenclaw" style="transition: opacity 0.4s ease, max-height 0.4s ease; overflow: hidden;">
+  <div id="wrapper-ravenclaw">
     <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: white; background-color: #003366;">🦅 CASA RAVENCLAW</div>
     <div id="grid-casa-ravenclaw" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,51,102,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
   </div>
@@ -236,7 +236,6 @@
   let stringGlobalRepetidas = ""; 
   let historialCodigosSesion = [];
   let esenciasMagicas = 0;
-  let intervaloFlashLocal = null;
 
   const infoCromos = {
     "1": "Merlín", "2": "Cornelius Agripa", "3": "Elfrida Clagg", "4": "Grogan Stump", "5": "Gulliver Pokeby",
@@ -326,7 +325,6 @@
     }
   };
 
-  // MONITOREO EN TIEMPO REAL DESDE FIREBASE (EVENTOS RELÁMPAGO Y SORTEOS)
   function escucharEventosYRealtime() {
     setInterval(() => {
        fetch(fbDatabaseURL + "evento_flash_activo.json").then(r=>r.json()).then(evt => {
@@ -337,7 +335,6 @@
                let min = String(Math.floor(restan / 60)).padStart(2, '0');
                let seg = String(restan % 60).padStart(2, '0');
                document.getElementById('reloj-evento-flash').innerText = `${min}:${seg}`;
-               if(restan <= 0) desactivarEventoFlashLocal();
            } else {
                alertDiv.style.display = 'none';
            }
@@ -363,10 +360,8 @@
     const gridDuendes = document.getElementById('grid-duendes');
     const gridDragones = document.getElementById('grid-dragones');
     
-    grid101.innerHTML = "";
-    if(gridVampiros) gridVampiros.innerHTML = ""; if(gridArpias) gridArpias.innerHTML = "";
-    if(gridGigantes) gridGigantes.innerHTML = ""; if(gridDuendes) gridDuendes.innerHTML = "";
-    if(gridDragones) gridDragones.innerHTML = "";
+    grid101.innerHTML = ""; gridVampiros.innerHTML = ""; gridArpias.innerHTML = "";
+    gridGigantes.innerHTML = ""; gridDuendes.innerHTML = ""; gridDragones.innerHTML = "";
 
     Object.keys(infoCromos).forEach(id => {
         const numId = parseInt(id);
@@ -412,10 +407,8 @@
     document.getElementById('panel-alumno-activo').style.display = 'block';
     document.getElementById('nombre-perfil-txt').innerText = miIdAlbum;
     
-    // Registrar usuario en lista de activos para la tómbola
     fetch(fbDatabaseURL + "lista_alumnos_activos/" + miIdAlbum + ".json", { method: 'PUT', body: 'true' });
     
-    // Cargar Esencias
     fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json").then(r=>r.json()).then(cant => {
         esenciasMagicas = cant || 0;
         document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
@@ -437,7 +430,7 @@
             Object.keys(guardados).forEach(id => { if(guardados[id] === true && infoCromos[id]) aplicarPegadoVisual(id, false); });
         }
         document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles;
-        ejecutarFiltradoVisual(); cargarRepetidasDesdeNube();
+        cambiarFiltro('todo'); cargarRepetidasDesdeNube();
     });
   }
 
@@ -455,9 +448,6 @@
     });
   }
 
-  // ==========================================
-  // MECÁNICA DE MINIJUEGOS ILIMITADOS Y TIENDA
-  // ==========================================
   function abrirMinijuego(tipo) {
     document.getElementById('juego-adivina').style.display = tipo === 'adivina' ? 'block' : 'none';
     document.getElementById('juego-giratiempo').style.display = tipo === 'giratiempo' ? 'block' : 'none';
@@ -505,11 +495,9 @@
     fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(esenciasMagicas) });
   }
 
-  // TRANSMUTACIONES DEL CALDERO
   function transmutarRepetidasPorSobre() {
     let totalRepetidasDisponibles = 0;
     Object.keys(cromosRepetidosCantidades).forEach(id => { if(cromosRepetidosCantidades[id] > 0) totalRepetidasDisponibles += cromosRepetidosCantidades[id]; });
-    
     if(totalRepetidasDisponibles < 3) { alert("Necesitás al menos 3 cromos repetidos en total."); return; }
     
     let restados = 0;
@@ -530,7 +518,6 @@
     procesarDificultadSobre();
   }
 
-  // RECLAMAR PREMIO DE EVENTO RELÁMPAGO (FLASH EVENT)
   function reclamarPremioFlash() {
      fetch(fbDatabaseURL + "evento_flash_activo.json").then(r=>r.json()).then(evt => {
          if(!evt || evt.activo !== true) { alert("El evento ya terminó."); return; }
@@ -543,7 +530,6 @@
      });
   }
 
-  // BALANCEO DE SOBRES CON RE-ROLL ANTIMULTIPLICIDAD
   function canjearCodigoSobreOnline() {
     let cod = document.getElementById('codigo-sobre-input').value.trim().toUpperCase(); if(cod === "") return;
     fetch(fbDatabaseURL + "codigos_sobres/" + cod + ".json").then(res => res.json()).then(data => {
@@ -601,7 +587,7 @@
         const resDiv = document.getElementById('resultado-sobre'); resDiv.style.display = 'block';
         let aviso = antiRepetidasTriggered ? `<br><span style="color:#58d68d;">✨ ¡Se aplicó magia anti-repetidas en tu sobre!</span>` : "";
         resDiv.innerHTML = `🎉 ¡SOBRE ABIERTO!<br><span style="color:#ffcc00;">${elegidos.map(id=>`N° ${id} (${infoCromos[id]})`).join(" | ")}</span>${aviso}`;
-        cargarRepetidasDesdeNube(); ejecutarFiltradoVisual();
+        cargarRepetidasDesdeNube(); cambiarFiltro(filtroActual);
     });
   }
 
@@ -626,7 +612,7 @@
                 });
             } else {
                 fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/" + cid + ".json", { method: 'PUT', body: 'true' }).then(() => {
-                    aplicarPegadoVisual(cid, true); ejecutarFiltradoVisual();
+                    aplicarPegadoVisual(cid, true); cambiarFiltro(filtroActual);
                 });
             }
         });
@@ -644,29 +630,18 @@
     document.getElementById('filtro-pegados').style.background = "#eadaf2"; document.getElementById('filtro-pegados').style.color = "#4a154b";
     document.getElementById('filtro-faltantes').style.background = "#eadaf2"; document.getElementById('filtro-faltantes').style.color = "#4a154b";
     document.getElementById('filtro-' + nuevoFiltro).style.background = "#4a154b"; document.getElementById('filtro-' + nuevoFiltro).style.color = "white";
-    ejecutarFiltradoVisual();
-  }
-
-  function ejecutarFiltradoVisual() {
+    
+    // FILTRADO ESTRICTO DE CROMOS SIN BORRAR NI OCULTAR SECCIONES
     Object.keys(infoCromos).forEach(id => {
         const slot = document.getElementById('slot-' + id); if(!slot) return;
-        if(filtroActual === "todo") slot.style.display = "flex";
-        else if(filtroActual === "pegados") slot.style.display = cromosPegadosIds.has(id) ? "flex" : "none";
-        else if(filtroActual === "faltantes") slot.style.display = !cromosPegadosIds.has(id) ? "flex" : "none";
+        if(filtroActual === "todo") {
+            slot.style.display = "flex";
+        } else if(filtroActual === "pegados") {
+            slot.style.display = cromosPegadosIds.has(id) ? "flex" : "none";
+        } else if(filtroActual === "faltantes") {
+            slot.style.display = !cromosPegadosIds.has(id) ? "flex" : "none";
+        }
     });
-    configurarVisibilidadSeccionSutil("wrapper-especiales", 1, 101);
-    configurarVisibilidadSeccionSutil("wrapper-vampiros", 102, 106);
-    configurarVisibilidadSeccionSutil("wrapper-arpias", 107, 111);
-    configurarVisibilidadSeccionSutil("wrapper-gigantes", 112, 116);
-    configurarVisibilidadSeccionSutil("wrapper-duendes", 117, 121);
-    configurarVisibilidadSeccionSutil("wrapper-dragones", 122, 126);
-  }
-
-  function configurarVisibilidadSeccionSutil(wrapperId, minId, maxId) {
-    const wrap = document.getElementById(wrapperId); if(!wrap) return;
-    let v = 0; for(let i=minId; i<=maxId; i++) { let s = document.getElementById("slot-"+i); if(s && s.style.display !== "none") v++; }
-    if(v === 0 && filtroActual !== "todo") { wrap.style.opacity = "0"; wrap.style.maxHeight = "0px"; wrap.style.pointerEvents = "none"; }
-    else { wrap.style.opacity = "1"; wrap.style.maxHeight = "2000px"; wrap.style.pointerEvents = "auto"; }
   }
 
   function aplicarEstiloVacio(id) {
@@ -685,7 +660,6 @@
     if(alertar) alert(`🌟 ¡Excelente! Pegaste: N° ${id} (${infoCromos[id]})`);
   }
 
-  // CONTROLES EXCLUSIVOS DEL DIRECTOR
   function verificarAdmin() {
     if(document.getElementById('admin-pass').value === "orion2026") {
         document.getElementById('admin-controls').style.display = 'block';
@@ -710,16 +684,14 @@
         let keys = Object.keys(alumnos);
         let ganador = keys[Math.floor(Math.random() * keys.length)];
         
-        // Registrar sorteo activo
         fetch(fbDatabaseURL + "sorteo_activo.json", { method: 'PUT', body: JSON.stringify({ activo: true, ganador: ganador }) });
         
-        // Inyectar sobre directamente al ganador
         let codSobre = "SORTEO-" + Math.random().toString(36).substring(2, 7).toUpperCase();
         fetch(fbDatabaseURL + "codigos_sobres/" + codSobre + ".json", { method: 'PUT', body: JSON.stringify({ usado: false }) }).then(() => {
              alert(`🎰 Sorteo ejecutado en vivo. Ganador: ${ganador}. Se emitió el sobre invisible.`);
              setTimeout(() => {
                  fetch(fbDatabaseURL + "sorteo_activo.json", { method: 'PUT', body: JSON.stringify({ activo: false, ganador: "" }) });
-             }, 8000); // 8 segundos de festejo visual global
+             }, 8000);
         });
     });
   }
@@ -783,6 +755,7 @@
             });
             totalVisibles = Object.keys(infoCromos).length;
             document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles; rellenarSelectorAdmin();
+            cambiarFiltro(filtroActual);
         }
     });
   }
