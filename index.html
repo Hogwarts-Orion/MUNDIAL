@@ -61,7 +61,7 @@
       <div style="font-size: 12px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 6px; letter-spacing: 1px;">🧪 EL CALDERO CHORREANTE (TRANSMUTACIONES)</div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
         <button onclick="transmutarRepetidasPorSobre()" style="background: rgba(255,255,255,0.1); border: 1px solid #ffcc00; color: white; padding: 6px; font-size: 10px; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold;">
-          ♻️ Reciclar 3 Repetidas<br><span style="color: #ffcc00;">Por 1 Sobre Especial</span>
+          ♻️ Reciclar 3 Repetidas<br><span style="color: #ffcc00;">1 Vez al Día (Gratis)</span>
         </button>
         <button onclick="comprarSobreConEsencia()" style="background: rgba(255,255,255,0.1); border: 1px solid #e67e22; color: white; padding: 6px; font-size: 10px; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold;">
           🔸 Gastar 50 Esencias<br><span style="color: #e67e22;">Por 1 Sobre Especial</span>
@@ -70,22 +70,17 @@
     </div>
 
     <div style="background: #fff; border: 1px solid #a282a9; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
-      <div style="font-size: 12px; font-weight: bold; color: #4a154b; text-align: center; margin-bottom: 6px;">🎮 MINIJUEGOS MÁGICOS ILIMITADOS (Suma Esencias)</div>
-      <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 8px;">
-        <button onclick="abrirMinijuego('adivina')" style="background: #2c0c2e; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold;">🔮 Adivina la Criatura</button>
-        <button onclick="abrirMinijuego('giratiempo')" style="background: #4a154b; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold;">⏳ Giratiempo Veloz</button>
+      <div style="font-size: 12px; font-weight: bold; color: #4a154b; text-align: center; margin-bottom: 6px;">🔮 MINIJUEGO DIARIO: ADIVINA LA CRIATURA</div>
+      
+      <div style="display: flex; justify-content: center; margin-bottom: 5px;">
+        <button id="btn-iniciar-juego-diario" onclick="intentarAbrirJuegoDiario()" style="background: #2c0c2e; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">🎯 JUGAR INTENTO DIARIO</button>
       </div>
       
-      <div id="juego-adivina" style="display: none; background: #f3ebf7; padding: 8px; border-radius: 6px; text-align: center; border: 1px dashed #4a154b;">
-        <div style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 5px;">¿A quién pertenece este cromo? <span id="juego-id-incognita" style="color:#4a154b;">?</span></div>
-        <div style="display:flex; gap: 4px; justify-content: center; margin-bottom: 4px;" id="opciones-juego-adivina"></div>
-        <div id="feedback-juego" style="font-size: 10px; font-weight: bold; margin-top: 4px;"></div>
-      </div>
-
-      <div id="juego-giratiempo" style="display: none; background: #fff4e0; padding: 8px; border-radius: 6px; text-align: center; border: 1px dashed #e67e22;">
-        <div style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">¡Detené el cronómetro justo en las Esencias de Oro!</div>
-        <button onclick="frenarGiratiempo()" id="btn-click-giratiempo" style="background: #e67e22; color:white; border:none; padding: 5px 12px; font-size:11px; font-weight:bold; border-radius:4px; cursor:pointer;">¡GIRAR TIEMPO! 🌀</button>
-        <div id="feedback-giratiempo" style="font-size: 10px; font-weight: bold; margin-top: 4px; color: #d35400;"></div>
+      <div id="juego-adivina" style="display: none; background: #f3ebf7; padding: 10px; border-radius: 6px; text-align: center; border: 1px dashed #4a154b; position: relative;">
+        <div style="position: absolute; top: 5px; right: 8px; background: #c0392b; color: white; font-family: monospace; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 4px;" id="reloj-cuenta-regresiva-juego">15s</div>
+        <div style="font-size: 12px; font-weight: bold; color: #333; margin-bottom: 8px; margin-right: 40px;">¿A quién pertenece este cromo? <span id="juego-id-incognita" style="color:#4a154b; font-weight: bold; background:#eadaf2; padding:2px 6px; border-radius:4px;">?</span></div>
+        <div style="display:grid; grid-template-columns: 1fr; gap: 5px; max-width: 280px; margin: 0 auto 6px auto;" id="opciones-juego-adivina"></div>
+        <div id="feedback-juego" style="font-size: 11px; font-weight: bold; margin-top: 4px; min-height: 16px;"></div>
       </div>
     </div>
 
@@ -237,6 +232,12 @@
   let historialCodigosSesion = [];
   let esenciasMagicas = 0;
 
+  // Variables del minijuego cronometrado
+  let juegoIncognitaId = "";
+  let temporizadorJuego = null;
+  let tiempoRestanteJuego = 15;
+  let juegoTerminadoEnTurno = false;
+
   const infoCromos = {
     "1": "Merlín", "2": "Cornelius Agripa", "3": "Elfrida Clagg", "4": "Grogan Stump", "5": "Gulliver Pokeby",
     "6": "Glanmore Peakes", "7": "Hesper Starky", "8": "Derwent Shimpling", "9": "Gunhilda De Gorsemoor", "10": "Burdock Muldoon",
@@ -313,7 +314,6 @@
   };
 
   let imagenesBaseDatos = {};
-  let juegoIncognitaId = "";
 
   window.onload = function() {
     dibujarEstructuraEspeciales126();
@@ -448,13 +448,23 @@
     });
   }
 
-  function abrirMinijuego(tipo) {
-    document.getElementById('juego-adivina').style.display = tipo === 'adivina' ? 'block' : 'none';
-    document.getElementById('juego-giratiempo').style.display = tipo === 'giratiempo' ? 'block' : 'none';
-    if(tipo === 'adivina') iniciarJuegoAdivina();
+  // REGLA: 1 MINIJUEGO POR DÍA CON 15 SEGUNDOS PARA RESPONDER
+  function intentarAbrirJuegoDiario() {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    const llaveSeguridad = `orion_juego_criatura_${miIdAlbum}_${fechaHoy}`;
+    
+    if(localStorage.getItem(llaveSeguridad)) {
+        alert("🧙‍♂️ Ya jugaste tu intento del día. ¡Regresá mañana para más esencias!");
+        return;
+    }
+    
+    document.getElementById('btn-iniciar-juego-diario').style.display = 'none';
+    document.getElementById('juego-adivina').style.display = 'block';
+    iniciarJuegoAdivina(llaveSeguridad);
   }
 
-  function iniciarJuegoAdivina() {
+  function iniciarJuegoAdivina(llaveSeguridad) {
+    juegoTerminadoEnTurno = false;
     let keys = Object.keys(infoCromos);
     juegoIncognitaId = keys[Math.floor(Math.random() * keys.length)];
     document.getElementById('juego-id-incognita').innerText = juegoIncognitaId;
@@ -469,36 +479,76 @@
     
     const cont = document.getElementById('opciones-juego-adivina'); cont.innerHTML = "";
     opciones.forEach(optId => {
-        cont.insertAdjacentHTML('beforeend', `<button onclick="validarRespuestaAdivina('${optId}')" style="background:#4a154b; color:white; border:none; padding:3px 8px; font-size:10px; cursor:pointer; border-radius:3px; font-weight:bold;">${infoCromos[optId]}</button>`);
+        cont.insertAdjacentHTML('beforeend', `<button id="btn-opt-${optId}" onclick="validarRespuestaAdivina('${optId}', '${llaveSeguridad}')" style="background:#4a154b; color:white; border:none; padding:5px 8px; font-size:11px; cursor:pointer; border-radius:4px; font-weight:bold; width:100%; text-align:left;">🔹 ${infoCromos[optId]}</button>`);
     });
+
+    // SISTEMA DE CRONÓMETRO EXCLUSIVO (15 SEGUNDOS)
+    tiempoRestanteJuego = 15;
+    document.getElementById('reloj-cuenta-regresiva-juego').innerText = tiempoRestanteJuego + "s";
+    document.getElementById('reloj-cuenta-regresiva-juego').style.background = "#c0392b";
+    
+    if(temporizadorJuego) clearInterval(temporizadorJuego);
+    temporizadorJuego = setInterval(() => {
+        tiempoRestanteJuego--;
+        document.getElementById('reloj-cuenta-regresiva-juego').innerText = tiempoRestanteJuego + "s";
+        
+        if(tiempoRestanteJuego <= 5) {
+            document.getElementById('reloj-cuenta-regresiva-juego').style.background = "#ff3333";
+        }
+        
+        if(tiempoRestanteJuego <= 0) {
+            clearInterval(temporizadorJuego);
+            finalizarJuegoPorTiempo(llaveSeguridad);
+        }
+    }, 1000);
   }
 
-  function validarRespuestaAdivina(elegido) {
+  function validarRespuestaAdivina(elegido, llaveSeguridad) {
+    if(juegoTerminadoEnTurno) return;
+    juegoTerminadoEnTurno = true;
+    clearInterval(temporizadorJuego);
+    
+    // Bloquear el intento en el almacenamiento local de forma inmediata
+    localStorage.setItem(llaveSeguridad, "jugado");
+    deshabilitarOpcionesJuego();
+
     if(elegido === juegoIncognitaId) {
         esenciasMagicas += 5; document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
         fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(esenciasMagicas) });
-        document.getElementById('feedback-juego').innerHTML = "<span style='color:green;'>✨ ¡Correcto! +5 Esencias Mágicas</span>";
-        setTimeout(iniciarJuegoAdivina, 1200);
+        document.getElementById('feedback-juego').innerHTML = "<span style='color:green; font-weight:bold;'>✨ ¡Excelente! Respuesta correcta. Ganaste +5 Esencias Mágicas.</span>";
     } else {
-        document.getElementById('feedback-juego').innerHTML = "<span style='color:red;'>❌ Errado, ¡intentá otra vez!</span>";
+        document.getElementById('feedback-juego').innerHTML = `<span style='color:red; font-weight:bold;'>❌ Incorrecto. La criatura correcta era: N° ${juegoIncognitaId} (${infoCromos[juegoIncognitaId]}).</span>`;
     }
   }
 
-  function frenarGiratiempo() {
-    let suerte = Math.random();
-    if(suerte < 0.35) {
-        esenciasMagicas += 8; document.getElementById('feedback-giratiempo').innerHTML = "⏳ ¡CRONÓMETRO DETENIDO! Ganaste +8 Esencias 🔸";
-    } else {
-        document.getElementById('feedback-giratiempo').innerHTML = "💨 El tiempo voló muy rápido. ¡Probá de nuevo!";
-    }
-    document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
-    fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(esenciasMagicas) });
+  function finalizarJuegoPorTiempo(llaveSeguridad) {
+    if(juegoTerminadoEnTurno) return;
+    juegoTerminadoEnTurno = true;
+    localStorage.setItem(llaveSeguridad, "jugado");
+    deshabilitarOpcionesJuego();
+    document.getElementById('feedback-juego').innerHTML = `<span style='color:red; font-weight:bold;'>⏳ ¡Tiempo agotado! Perdiste el intento de hoy. Era: N° ${juegoIncognitaId} (${infoCromos[juegoIncognitaId]}).</span>`;
   }
 
+  function deshabilitarOpcionesJuego() {
+    Object.keys(infoCromos).forEach(id => {
+        let btn = document.getElementById(`btn-opt-${id}`);
+        if(btn) { btn.disabled = true; btn.style.opacity = "0.5"; btn.style.cursor = "not-allowed"; }
+    });
+  }
+
+  // REGLA: TRANSMUTACIÓN DE REPETIDAS (1 VEZ AL DÍA)
   function transmutarRepetidasPorSobre() {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    const llaveCaldero = `orion_caldero_reciclaje_${miIdAlbum}_${fechaHoy}`;
+
+    if(localStorage.getItem(llaveCaldero)) {
+        alert("🧪 El caldero está apagado. Ya realizaste tu transmutación diaria. ¡Regresá mañana!");
+        return;
+    }
+
     let totalRepetidasDisponibles = 0;
     Object.keys(cromosRepetidosCantidades).forEach(id => { if(cromosRepetidosCantidades[id] > 0) totalRepetidasDisponibles += cromosRepetidosCantidades[id]; });
-    if(totalRepetidasDisponibles < 3) { alert("Necesitás al menos 3 cromos repetidos en total."); return; }
+    if(totalRepetidasDisponibles < 3) { alert("Necesitás al menos 3 cromos repetidos en total en tu inventario."); return; }
     
     let restados = 0;
     Object.keys(cromosRepetidosCantidades).forEach(id => {
@@ -507,7 +557,10 @@
             fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: JSON.stringify(cromosRepetidosCantidades[id]) });
         }
     });
-    alert("🧪 Las 3 repetidas burbujearon en el caldero... ¡Se generó tu sobre!");
+
+    // Guardar bloqueo diario exitoso
+    localStorage.setItem(llaveCaldero, "utilizado");
+    alert("🧪 Las 3 repetidas se disolvieron en esencias puras... ¡Se fabricó tu sobre!");
     procesarDificultadSobre();
   }
 
@@ -631,7 +684,6 @@
     document.getElementById('filtro-faltantes').style.background = "#eadaf2"; document.getElementById('filtro-faltantes').style.color = "#4a154b";
     document.getElementById('filtro-' + nuevoFiltro).style.background = "#4a154b"; document.getElementById('filtro-' + nuevoFiltro).style.color = "white";
     
-    // FILTRADO ESTRICTO DE CROMOS SIN BORRAR NI OCULTAR SECCIONES
     Object.keys(infoCromos).forEach(id => {
         const slot = document.getElementById('slot-' + id); if(!slot) return;
         if(filtroActual === "todo") {
