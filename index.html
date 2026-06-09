@@ -821,6 +821,80 @@
     50% { opacity: 1; transform: scale(1.01); }
     100% { opacity: 0.9; }
   }
+<div style="background: #111; border: 2px solid #ffcc00; border-radius: 12px; padding: 20px; max-width: 500px; margin: 20px auto; color: white; font-family: sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+  <div style="font-size: 14px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase;">
+    🧙‍♂️ Panel del Director: Generador de Sobres
+  </div>
+  
+  <p style="font-size: 11px; color: #aaa; text-align: center; margin-top: 0; margin-bottom: 15px;">
+    Genera 50 códigos únicos por vez para enviar a las encargadas del Caldero Chorreante.
+  </p>
+
+  <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+    <button onclick="generar50CodigosOrion()" style="flex: 1; background: #ffcc00; color: #111; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s;">
+      🎲 Generar 50 Códigos
+    </button>
+    <button id="btn-copiar-codigos" onclick="copiarCodigosAlPortapapeles()" style="flex: 1; background: #4a154b; color: white; border: 1px solid #ffcc00; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; display: none;">
+      📋 Copiar Lista Completa
+    </button>
+  </div>
+
+  <textarea id="lista-codigos-generados" readonly style="width: 100%; height: 180px; background: #222; color: #00ffcc; border: 1px solid #444; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 11px; box-sizing: border-box; display: none; resize: none;"></textarea>
+  
+  <div id="aviso-copiado" style="text-align: center; color: #27ae60; font-size: 11px; font-weight: bold; margin-top: 5px; display: none;">
+    ¡✓ Códigos copiados al portapapeles con éxito!
+  </div>
+</div>
+
+<script>
+function generar50CodigosOrion() {
+  const listaTextArea = document.getElementById('lista-codigos-generados');
+  const btnCopiar = document.getElementById('btn-copiar-codigos');
+  const aviso = document.getElementById('aviso-copiado');
+  
+  aviso.style.display = 'none';
+  let codigos = [];
+  
+  // Caracteres para la parte aleatoria del sobre
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  
+  for (let i = 0; i < 50; i++) {
+    let codigoAleatorio = '';
+    // Genera 5 caracteres alfanuméricos al azar (ej: X4R9T)
+    for (let j = 0; j < 5; j++) {
+      codigoAleatorio += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    // Armamos la estructura final oficial
+    codigos.push(`ORION-SOBRE-${codigoAleatorio}`);
+  }
+  
+  // Unimos los códigos con un salto de línea para que queden en lista limpia
+  listaTextArea.value = codigos.join('\n');
+  
+  // Mostramos los elementos en la pantalla
+  listaTextArea.style.display = 'block';
+  btnCopiar.style.display = 'block';
+}
+
+function copiarCodigosAlPortapapeles() {
+  const listaTextArea = document.getElementById('lista-codigos-generados');
+  const aviso = document.getElementById('aviso-copiado');
+  
+  // Selecciona el contenido del cuadro de texto
+  listaTextArea.select();
+  listaTextArea.setSelectionRange(0, 99999); // Para dispositivos móviles
+  
+  // Copia el texto seleccionado al portapapeles del sistema
+  navigator.clipboard.writeText(listaTextArea.value).then(() => {
+    aviso.style.display = 'block';
+    // Oculta el mensaje de éxito después de 3 segundos
+    setTimeout(() => { aviso.style.display = 'none'; }, 3000);
+  }).catch(err => {
+    alert('❌ Error al copiar los códigos de forma automática: ', err);
+  });
+}
+</script>
+      
 </style>
 </body>
 </html>
