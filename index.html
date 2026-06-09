@@ -204,7 +204,7 @@
         </div>
     </div>
 
-    <div style="background: #111; padding: 12px; border-radius: 6px;">
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
         <b style="color: #ffcc00; font-size: 11px;">➕ INYECTAR NUEVO ALUMNO PERSONALIZADO (PROTECCIÓN IDs):</b>
         <input type="text" id="nuevo-cromo-nombre" placeholder="Nombre del personaje..." style="width: 100%; padding: 6px; margin: 4px 0; box-sizing: border-box; font-size:11px;">
         <input type="text" id="nuevo-cromo-imagen" placeholder="URL Imagen..." style="width: 100%; padding: 6px; margin: 4px 0; box-sizing: border-box; font-size:11px;">
@@ -217,7 +217,31 @@
         </select>
         <button onclick="crearNuevoCromoColeccion()" style="width: 100%; background: #4a154b; color: white; border: 1px solid #ffcc00; padding: 8px; font-weight: bold; cursor: pointer; font-size:11px;">GUARDAR EN FIREBASE</button>
     </div>
-  </div>
+
+    <div style="background: #0d0d0d; border: 2px solid #ffcc00; border-radius: 8px; padding: 12px; margin-top: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.6);">
+      <div style="font-size: 12px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase;">
+        🧙‍♂️ PANEL MASIVO: LOTE DE SOBRES PREMIUM
+      </div>
+      <p style="font-size: 10px; color: #999; text-align: center; margin: 0 0 10px 0;">
+        Generación instantánea de 50 códigos en texto para el Caldero Chorreante.
+      </p>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <button onclick="generar50CodigosOrion()" style="flex: 1; background: #ffcc00; color: #111; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">
+          🎲 Generar 50 Códigos
+        </button>
+        <button id="btn-copiar-codigos" onclick="copiarCodigosAlPortapapeles()" style="flex: 1; background: #4a154b; color: white; border: 1px solid #ffcc00; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; display: none;">
+          📋 Copiar Lista Completa
+        </button>
+      </div>
+
+      <textarea id="lista-codigos-generados" readonly style="width: 100%; height: 140px; background: #1a1a1a; color: #00ffcc; border: 1px solid #333; border-radius: 4px; padding: 8px; font-family: monospace; font-size: 11px; box-sizing: border-box; display: none; resize: none;"></textarea>
+      
+      <div id="aviso-copiado" style="text-align: center; color: #27ae60; font-size: 11px; font-weight: bold; margin-top: 5px; display: none;">
+        ¡✓ Códigos copiados al portapapeles con éxito!
+      </div>
+    </div>
+    </div>
 </div>
 
 <script>
@@ -324,6 +348,44 @@
         mostrarInterfazAlumnoActivo();
     }
   };
+
+  // FUNCIONES DE GENERACIÓN MASIVA PARA EL DIRECTOR
+  function generar50CodigosOrion() {
+    const listaTextArea = document.getElementById('lista-codigos-generados');
+    const btnCopiar = document.getElementById('btn-copiar-codigos');
+    const aviso = document.getElementById('aviso-copiado');
+    
+    aviso.style.display = 'none';
+    let codigos = [];
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    
+    for (let i = 0; i < 50; i++) {
+      let codigoAleatorio = '';
+      for (let j = 0; j < 5; j++) {
+        codigoAleatorio += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+      }
+      codigos.push('ORION-SOBRE-' + codigoAleatorio);
+    }
+    
+    listaTextArea.value = codigos.join('\n');
+    listaTextArea.style.display = 'block';
+    btnCopiar.style.display = 'block';
+  }
+
+  function copiarCodigosAlPortapapeles() {
+    const listaTextArea = document.getElementById('lista-codigos-generados');
+    const aviso = document.getElementById('aviso-copiado');
+    
+    listaTextArea.select();
+    listaTextArea.setSelectionRange(0, 99999);
+    
+    navigator.clipboard.writeText(listaTextArea.value).then(() => {
+      aviso.style.display = 'block';
+      setTimeout(() => { aviso.style.display = 'none'; }, 3000);
+    }).catch(err => {
+      alert('❌ Error al copiar los códigos: ', err);
+    });
+  }
 
   function escucharEventosYRealtime() {
     setInterval(() => {
@@ -448,7 +510,6 @@
     });
   }
 
-  // REGLA: 1 MINIJUEGO POR DÍA CON 15 SEGUNDOS PARA RESPONDER
   function intentarAbrirJuegoDiario() {
     const fechaHoy = new Date().toISOString().split('T')[0];
     const llaveSeguridad = `orion_juego_criatura_${miIdAlbum}_${fechaHoy}`;
@@ -482,7 +543,6 @@
         cont.insertAdjacentHTML('beforeend', `<button id="btn-opt-${optId}" onclick="validarRespuestaAdivina('${optId}', '${llaveSeguridad}')" style="background:#4a154b; color:white; border:none; padding:5px 8px; font-size:11px; cursor:pointer; border-radius:4px; font-weight:bold; width:100%; text-align:left;">🔹 ${infoCromos[optId]}</button>`);
     });
 
-    // SISTEMA DE CRONÓMETRO EXCLUSIVO (15 SEGUNDOS)
     tiempoRestanteJuego = 15;
     document.getElementById('reloj-cuenta-regresiva-juego').innerText = tiempoRestanteJuego + "s";
     document.getElementById('reloj-cuenta-regresiva-juego').style.background = "#c0392b";
@@ -508,7 +568,6 @@
     juegoTerminadoEnTurno = true;
     clearInterval(temporizadorJuego);
     
-    // Bloquear el intento en el almacenamiento local de forma inmediata
     localStorage.setItem(llaveSeguridad, "jugado");
     deshabilitarOpcionesJuego();
 
@@ -536,7 +595,6 @@
     });
   }
 
-  // REGLA: TRANSMUTACIÓN DE REPETIDAS (1 VEZ AL DÍA)
   function transmutarRepetidasPorSobre() {
     const fechaHoy = new Date().toISOString().split('T')[0];
     const llaveCaldero = `orion_caldero_reciclaje_${miIdAlbum}_${fechaHoy}`;
@@ -558,7 +616,6 @@
         }
     });
 
-    // Guardar bloqueo diario exitoso
     localStorage.setItem(llaveCaldero, "utilizado");
     alert("🧪 Las 3 repetidas se disolvieron en esencias puras... ¡Se fabricó tu sobre!");
     procesarDificultadSobre();
@@ -821,69 +878,6 @@
     50% { opacity: 1; transform: scale(1.01); }
     100% { opacity: 0.9; }
   }
- <div style="background: #111; border: 2px solid #ffcc00; border-radius: 12px; padding: 20px; max-width: 500px; margin: 40px auto 20px auto; color: white; font-family: sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.5); clear: both;">
-      <div style="font-size: 14px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase;">
-        🧙‍♂️ Panel del Director: Generador de Sobres
-      </div>
-      
-      <p style="font-size: 11px; color: #aaa; text-align: center; margin-top: 0; margin-bottom: 15px;">
-        Genera 50 códigos únicos por vez para enviar a las encargadas del Caldero Chorreante.
-      </p>
-
-      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <button onclick="generar50CodigosOrion()" style="flex: 1; background: #ffcc00; color: #111; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px;">
-          🎲 Generar 50 Códigos
-        </button>
-        <button id="btn-copiar-codigos" onclick="copiarCodigosAlPortapapeles()" style="flex: 1; background: #4a154b; color: white; border: 1px solid #ffcc00; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; display: none;">
-          📋 Copiar Lista Completa
-        </button>
-      </div>
-
-      <textarea id="lista-codigos-generados" readonly style="width: 100%; height: 180px; background: #222; color: #00ffcc; border: 1px solid #444; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 11px; box-sizing: border-box; display: none; resize: none;"></textarea>
-      
-      <div id="aviso-copiado" style="text-align: center; color: #27ae60; font-size: 11px; font-weight: bold; margin-top: 5px; display: none;">
-        ¡✓ Códigos copiados al portapapeles con éxito!
-      </div>
-    </div>
-
-    <script>
-    function generar50CodigosOrion() {
-      const listaTextArea = document.getElementById('lista-codigos-generados');
-      const btnCopiar = document.getElementById('btn-copiar-codigos');
-      const aviso = document.getElementById('aviso-copiado');
-      
-      aviso.style.display = 'none';
-      let codigos = [];
-      const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      
-      for (let i = 0; i < 50; i++) {
-        let codigoAleatorio = '';
-        for (let j = 0; j < 5; j++) {
-          codigoAleatorio += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-        }
-        codigos.push(`ORION-SOBRE-${codigoAleatorio}`);
-      }
-      
-      listaTextArea.value = codigos.join('\n');
-      listaTextArea.style.display = 'block';
-      btnCopiar.style.display = 'block';
-    }
-
-    function copiarCodigosAlPortapapeles() {
-      const listaTextArea = document.getElementById('lista-codigos-generados');
-      const aviso = document.getElementById('aviso-copiado');
-      
-      listaTextArea.select();
-      listaTextArea.setSelectionRange(0, 99999);
-      
-      navigator.clipboard.writeText(listaTextArea.value).then(() => {
-        aviso.style.display = 'block';
-        setTimeout(() => { aviso.style.display = 'none'; }, 3000);
-      }).catch(err => {
-        alert('❌ Error al copiar los códigos: ', err);
-      });
-    }
-    </script>
-    </body>
+</style>
+</body>
 </html>
-          
