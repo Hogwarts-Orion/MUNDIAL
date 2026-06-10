@@ -171,6 +171,27 @@
   </div>
   
   <div id="admin-controls" style="display: none;">
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 2px solid #8a6893;">
+      <b style="color: #d4bee0; font-size: 11px; display: block; margin-bottom: 6px;">🔍 INSPECTOR DE ÁLBUMES (PROGRESO ALUMNOS):</b>
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="text" id="inspeccionar-alumno-input" placeholder="Nombre exacto del alumno..." style="flex-grow: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #222; color: white; font-size: 12px;">
+        <button onclick="inspeccionarAlbumAlumno()" style="background: #8a6893; color: white; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;">Revisar</button>
+      </div>
+      <div id="resultado-inspeccion" style="background: #050505; border: 1px dashed #444; padding: 8px; border-radius: 4px; font-size: 11px; display: none; max-height: 150px; overflow-y: auto;">
+        <div id="inspeccion-progreso" style="font-weight: bold; color: #ffcc00; margin-bottom: 4px;"></div>
+        <div id="inspeccion-lista-cromos" style="color: #ccc; font-family: monospace; white-space: normal; word-break: break-all; line-height: 1.4;"></div>
+      </div>
+    </div>
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 2px solid #ff3333;">
+      <b style="color: #ff9999; font-size: 11px; display: block; margin-bottom: 6px;">🚨 VERIFICADOR ANTIFRAUDE DE CÓDIGOS:</b>
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="text" id="verificar-codigo-input" placeholder="Pegar el código sospechoso aquí..." style="flex-grow: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #222; color: white; font-size: 12px; text-transform: uppercase;">
+        <button onclick="rastrearEstadoCodigo()" style="background: #ff3333; color: white; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;">Auditar</button>
+      </div>
+      <div id="resultado-auditoria-codigo" style="background: #000; border: 1px solid #333; padding: 10px; border-radius: 4px; font-size: 12px; display: none; text-align: center;"></div>
+    </div>
     <div style="background: #111; padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed #d35400;">
       <b style="color: #e67e22; font-size: 11px;">⏱️ LANZAR EVENTO FLASH CON CUENTA REGRESIVA:</b>
       <div style="display: flex; gap: 5px; margin-top: 6px;">
@@ -241,7 +262,8 @@
         ¡✓ Códigos copiados al portapapeles con éxito!
       </div>
     </div>
-    </div>
+
+  </div>
 </div>
 
 <script>
@@ -348,7 +370,107 @@
     }
   };
 
-  // NUEVA FUNCIÓN MASIVA: GENERA Y ASIGNA AUTOMÁTICAMENTE EN FIREBASE
+  function inspeccionarAlbumAlumno() {
+    let alumnoBuscar = document.getElementById('inspeccionar-alumno-input').value.trim();
+    if(alumnoBuscar === "") { alert("Por favor ingresá un nombre."); return; }
+    let idBuscar = alumnoBuscar.replace(/[\.\#\$\[\]]/g, "_");
+    
+    const divRes = document.getElementById('resultado-inspeccion');
+    const txtProgreso = document.getElementById('inspeccion-progreso');
+    const txtLista = document.getElementById('inspeccion-lista-cromos');
+    
+    fetch(fbDatabaseURL + "usuarios/" + idBuscar + ".json")
+    .then(res => res.json())
+    .then(data => {
+        divRes.style.display = 'block';
+        if(!data) {
+            txtProgreso.innerText = `👤 Alumno: ${alumnoBuscar}`;
+            txtLista.innerHTML = `<span style="color:#ff3333;">El alumno no tiene progreso registrado o no existe.</span>`;
+            return;
+        }
+        
+        let pegados = [];
+        Object.keys(data).forEach(id => {
+            if(data[id] === true && infoCromos[id]) {
+                pegados.push(`N° ${id} (${infoCromos[id]})`);
+            }
+        });
+        
+        txtProgreso.innerText = `👤 Alumno: ${alumnoBuscar} (${pegados.length} / ${totalVisibles} Pegados)`;
+        if(pegados.length === 0) {
+            txtLista.innerText = "No tiene ningún cromo pegado todavía.";
+        } else {
+            txtLista.innerText = pegados.join(" | ");
+        }
+    })
+    .catch(err => { alert("Error al conectar con la base de datos: " + err); });
+  }
+
+  // NUEVA FUNCIÓN: AUDITORÍA DE CÓDIGOS ANTIFRAUDE
+  function rastrearEstadoCodigo() {
+    let codVerificar = document.getElementById('verificar-codigo-input').value.trim().toUpperCase();
+    const cajaResultado = document.getElementById('resultado-auditoria-codigo');
+    if(codVerificar === "") { alert("Ingresá un código para auditar."); return; }
+
+    cajaResultado.style.display = "block";
+    cajaResultado.innerHTML = "<span style='color: #ccc;'>Rastreando en los servidores de la red Flú...</span>";
+
+    // Primero miramos en la base de códigos individuales
+    fetch(fbDatabaseURL + "codigos/" + codVerificar + ".json")
+    .then(res => res.json())
+    .then(dataIndividual => {
+        if(dataIndividual) {
+            let cromoAsociado = dataIndividual.cromo_id;
+            let nombreCromo = infoCromos[cromoAsociado] || "Desconocido";
+            if(dataIndividual.usado === true) {
+                cajaResultado.innerHTML = `
+                    <div style="color: #ff3333; font-weight: bold; font-size: 13px;">❌ CÓDIGO YA CANJEADO</div>
+                    <div style="color: #aaa; margin-top: 4px;">Tipo: Cromo individual (N° ${cromoAsociado} - ${nombreCromo})</div>
+                    <div style="color: #ffaa00; font-size: 11px; margin-top: 4px;">⚠️ El código es válido pero ya fue absorbido. Si el alumno dice que no le funcionó, te está mintiendo o lo usó otra persona.</div>
+                `;
+            } else {
+                cajaResultado.innerHTML = `
+                    <div style="color: #27ae60; font-weight: bold; font-size: 13px;">✅ CÓDIGO VÁLIDO Y LIBRE</div>
+                    <div style="color: #aaa; margin-top: 4px;">Tipo: Cromo individual (N° ${cromoAsociado} - ${nombreCromo})</div>
+                    <div style="color: #fff; font-size: 11px; margin-top: 4px;">Nadie lo ha usado todavía. Está listo para ser ingresado.</div>
+                `;
+            }
+            return;
+        }
+
+        // Si no se halló en individuales, buscamos en sobres
+        fetch(fbDatabaseURL + "codigos_sobres/" + codVerificar + ".json")
+        .then(res => res.json())
+        .then(dataSobre => {
+            if(dataSobre) {
+                if(dataSobre.usado === true) {
+                    cajaResultado.innerHTML = `
+                        <div style="color: #ff3333; font-weight: bold; font-size: 13px;">❌ CÓDIGO DE SOBRE YA ABIERTO</div>
+                        <div style="color: #aaa; margin-top: 4px;">Tipo: Paquete de 3 Cromos Aleatorios</div>
+                        <div style="color: #ffaa00; font-size: 11px; margin-top: 4px;">⚠️ Este sobre ya fue reclamado y sus cromos fueron inyectados en un álbum. No puede usarse otra vez.</div>
+                    `;
+                } else {
+                    cajaResultado.innerHTML = `
+                        <div style="color: #27ae60; font-weight: bold; font-size: 13px;">✅ SOBRE PREMIUM DISPONIBLE</div>
+                        <div style="color: #aaa; margin-top: 4px;">Tipo: Paquete de 3 Cromos Aleatorios</div>
+                        <div style="color: #fff; font-size: 11px; margin-top: 4px;">Este código de sobre está activo en Firebase y listo para abrirse.</div>
+                    `;
+                }
+            } else {
+                // No existe en ningún lado
+                cajaResultado.innerHTML = `
+                    <div style="color: #e74c3c; font-weight: bold; font-size: 13px;">🚫 CÓDIGO INEXISTENTE / FALSO</div>
+                    <div style="color: #aaa; margin-top: 4px;">Este código jamás fue generado por el sistema.</div>
+                    <div style="color: #ff3333; font-size: 11px; margin-top: 4px;">🛑 El alumno inventó el código o está mal escrito.</div>
+                `;
+            }
+        });
+    })
+    .catch(err => {
+        cajaResultado.innerHTML = "<span style='color: #ff3333;'>Error al auditar la base de datos de Firebase.</span>";
+    });
+  }
+
   function generar50CodigosOrion() {
     const listaTextArea = document.getElementById('lista-codigos-generados');
     const btnCopiar = document.getElementById('btn-copiar-codigos');
@@ -357,8 +479,6 @@
     aviso.style.display = 'none';
     let codigos = [];
     const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    
-    // Objeto temporal para mandar todo a Firebase de un solo viaje
     let loteSobres = {};
 
     for (let i = 0; i < 50; i++) {
@@ -368,40 +488,30 @@
       }
       let nuevoCodigoSobre = 'ORION-SOBRE-' + codigoAleatorio;
       codigos.push(nuevoCodigoSobre);
-      
-      // Estructura oficial del sobre en falso (no usado)
       loteSobres[nuevoCodigoSobre] = { usado: false };
     }
     
-    // Guardamos masivamente los 50 códigos creados directo en tu base de datos Firebase
     fetch(fbDatabaseURL + "codigos_sobres.json", {
-      method: 'PATCH', // PATCH une los nuevos códigos sin borrar los anteriores
+      method: 'PATCH',
       body: JSON.stringify(loteSobres)
     })
     .then(() => {
-        // Una vez guardado con éxito en Firebase, los mostramos en el área de texto
         listaTextArea.value = codigos.join('\n');
         listaTextArea.style.display = 'block';
         btnCopiar.style.display = 'block';
         alert("🧙‍♂️ ¡50 Sobres Premium generados e inyectados con éxito en la base de datos!");
     })
-    .catch(err => {
-        alert("❌ Error al conectar con Firebase: " + err);
-    });
+    .catch(err => { alert("❌ Error al conectar con Firebase: " + err); });
   }
 
   function copiarCodigosAlPortapapeles() {
     const listaTextArea = document.getElementById('lista-codigos-generados');
     const aviso = document.getElementById('aviso-copiado');
-    
     listaTextArea.select();
     listaTextArea.setSelectionRange(0, 99999);
-    
     navigator.clipboard.writeText(listaTextArea.value).then(() => {
       aviso.style.display = 'block';
       setTimeout(() => { aviso.style.display = 'none'; }, 3000);
-    }).catch(err => {
-      alert('❌ Error al copiar los códigos: ', err);
     });
   }
 
@@ -415,9 +525,7 @@
                let min = String(Math.floor(restan / 60)).padStart(2, '0');
                let seg = String(restan % 60).padStart(2, '0');
                document.getElementById('reloj-evento-flash').innerText = `${min}:${seg}`;
-           } else {
-               alertDiv.style.display = 'none';
-           }
+           } else { alertDiv.style.display = 'none'; }
        });
        
        fetch(fbDatabaseURL + "sorteo_activo.json").then(r=>r.json()).then(sorteo => {
@@ -425,9 +533,7 @@
            if(sorteo && sorteo.activo === true) {
                marq.style.display = 'block';
                document.getElementById('ganador-sorteo-txt').innerText = sorteo.ganador || "Buscando...";
-           } else {
-               marq.style.display = 'none';
-           }
+           } else { marq.style.display = 'none'; }
        });
     }, 1000);
   }
@@ -488,7 +594,6 @@
     document.getElementById('nombre-perfil-txt').innerText = miIdAlbum;
     
     fetch(fbDatabaseURL + "lista_alumnos_activos/" + miIdAlbum + ".json", { method: 'PUT', body: 'true' });
-    
     fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json").then(r=>r.json()).then(cant => {
         esenciasMagicas = cant || 0;
         document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
@@ -531,12 +636,9 @@
   function intentarAbrirJuegoDiario() {
     const fechaHoy = new Date().toISOString().split('T')[0];
     const llaveSeguridad = `orion_juego_criatura_${miIdAlbum}_${fechaHoy}`;
-    
     if(localStorage.getItem(llaveSeguridad)) {
-        alert("🧙‍♂️ Ya jugaste tu intento del día. ¡Regresá mañana para más esencias!");
-        return;
+        alert("🧙‍♂️ Ya jugaste tu intento del día. ¡Regresá mañana para más esencias!"); return;
     }
-    
     document.getElementById('btn-iniciar-juego-diario').style.display = 'none';
     document.getElementById('juego-adivina').style.display = 'block';
     iniciarJuegoAdivina(llaveSeguridad);
@@ -569,25 +671,15 @@
     temporizadorJuego = setInterval(() => {
         tiempoRestanteJuego--;
         document.getElementById('reloj-cuenta-regresiva-juego').innerText = tiempoRestanteJuego + "s";
-        
-        if(tiempoRestanteJuego <= 5) {
-            document.getElementById('reloj-cuenta-regresiva-juego').style.background = "#ff3333";
-        }
-        
-        if(tiempoRestanteJuego <= 0) {
-            clearInterval(temporizadorJuego);
-            finalizarJuegoPorTiempo(llaveSeguridad);
-        }
+        if(tiempoRestanteJuego <= 5) document.getElementById('reloj-cuenta-regresiva-juego').style.background = "#ff3333";
+        if(tiempoRestanteJuego <= 0) { clearInterval(temporizadorJuego); finalizarJuegoPorTiempo(llaveSeguridad); }
     }, 1000);
   }
 
   function validarRespuestaAdivina(elegido, llaveSeguridad) {
     if(juegoTerminadoEnTurno) return;
-    juegoTerminadoEnTurno = true;
-    clearInterval(temporizadorJuego);
-    
-    localStorage.setItem(llaveSeguridad, "jugado");
-    deshabilitarOpcionesJuego();
+    juegoTerminadoEnTurno = true; clearInterval(temporizadorJuego);
+    localStorage.setItem(llaveSeguridad, "jugado"); deshabilitarOpcionesJuego();
 
     if(elegido === juegoIncognitaId) {
         esenciasMagicas += 5; document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
@@ -600,9 +692,7 @@
 
   function finalizarJuegoPorTiempo(llaveSeguridad) {
     if(juegoTerminadoEnTurno) return;
-    juegoTerminadoEnTurno = true;
-    localStorage.setItem(llaveSeguridad, "jugado");
-    deshabilitarOpcionesJuego();
+    juegoTerminadoEnTurno = true; localStorage.setItem(llaveSeguridad, "jugado"); deshabilitarOpcionesJuego();
     document.getElementById('feedback-juego').innerHTML = `<span style='color:red; font-weight:bold;'>⏳ ¡Tiempo agotado! Perdiste el intento de hoy. Era: N° ${juegoIncognitaId} (${infoCromos[juegoIncognitaId]}).</span>`;
   }
 
@@ -616,15 +706,11 @@
   function transmutarRepetidasPorSobre() {
     const fechaHoy = new Date().toISOString().split('T')[0];
     const llaveCaldero = `orion_caldero_reciclaje_${miIdAlbum}_${fechaHoy}`;
-
-    if(localStorage.getItem(llaveCaldero)) {
-        alert("🧪 El caldero está apagado. Ya realizaste tu transmutación diaria. ¡Regresá mañana!");
-        return;
-    }
+    if(localStorage.getItem(llaveCaldero)) { alert("🧪 El caldero está apagado. Ya realizaste tu transmutación diaria."); return; }
 
     let totalRepetidasDisponibles = 0;
     Object.keys(cromosRepetidosCantidades).forEach(id => { if(cromosRepetidosCantidades[id] > 0) totalRepetidasDisponibles += cromosRepetidosCantidades[id]; });
-    if(totalRepetidasDisponibles < 3) { alert("Necesitás al menos 3 cromos repetidos en total en tu inventario."); return; }
+    if(totalRepetidasDisponibles < 3) { alert("Necesitás al menos 3 cromos repetidos."); return; }
     
     let restados = 0;
     Object.keys(cromosRepetidosCantidades).forEach(id => {
@@ -633,10 +719,8 @@
             fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: JSON.stringify(cromosRepetidosCantidades[id]) });
         }
     });
-
     localStorage.setItem(llaveCaldero, "utilizado");
-    alert("🧪 Las 3 repetidas se disolvieron en esencias puras... ¡Se fabricó tu sobre!");
-    procesarDificultadSobre();
+    alert("🧪 Las 3 repetidas se disolvieron..."); procesarDificultadSobre();
   }
 
   function comprarSobreConEsencia() {
@@ -652,8 +736,7 @@
          fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/reclamos_flash/" + evt.expira + ".json").then(r=>r.json()).then(yaReclamo => {
              if(yaReclamo) { alert("Ya reclamaste este cofre."); return; }
              fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/reclamos_flash/" + evt.expira + ".json", { method: 'PUT', body: 'true' });
-             alert("🎁 ¡Cofre Flash Abierto!");
-             procesarDificultadSobre();
+             alert("🎁 ¡Cofre Flash Abierto!"); procesarDificultadSobre();
          });
      });
   }
@@ -682,11 +765,8 @@
             else if(esEpico) finalId = String(Math.floor(Math.random() * (126 - 102 + 1)) + 102);
             else finalId = todasLasKeys[Math.floor(Math.random() * todasLasKeys.length)];
 
-            if(cromosPegadosIds.has(finalId) && (cromosRepetidosCantidades[finalId] || 0) >= 3) {
-                antiRepetidasTriggered = true;
-            } else {
-                asignado = true;
-            }
+            if(cromosPegadosIds.has(finalId) && (cromosRepetidosCantidades[finalId] || 0) >= 3) { antiRepetidasTriggered = true; }
+            else { asignado = true; }
         }
         elegidos.push(finalId);
     }
@@ -713,7 +793,7 @@
         });
         pegadas = cromosPegadosIds.size; document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles;
         const resDiv = document.getElementById('resultado-sobre'); resDiv.style.display = 'block';
-        let aviso = antiRepetidasTriggered ? `<br><span style="color:#58d68d;">✨ ¡Se aplicó magia anti-repetidas en tu sobre!</span>` : "";
+        let aviso = antiRepetidasTriggered ? `<br><span style="color:#58d68d;">✨ ¡Se aplicó magia anti-repetidas!</span>` : "";
         resDiv.innerHTML = `🎉 ¡SOBRE ABIERTO!<br><span style="color:#ffcc00;">${elegidos.map(id=>`N° ${id} (${infoCromos[id]})`).join(" | ")}</span>${aviso}`;
         cargarRepetidasDesdeNube(); cambiarFiltro(filtroActual);
     });
@@ -761,13 +841,9 @@
     
     Object.keys(infoCromos).forEach(id => {
         const slot = document.getElementById('slot-' + id); if(!slot) return;
-        if(filtroActual === "todo") {
-            slot.style.display = "flex";
-        } else if(filtroActual === "pegados") {
-            slot.style.display = cromosPegadosIds.has(id) ? "flex" : "none";
-        } else if(filtroActual === "faltantes") {
-            slot.style.display = !cromosPegadosIds.has(id) ? "flex" : "none";
-        }
+        if(filtroActual === "todo") slot.style.display = "flex";
+        else if(filtroActual === "pegados") slot.style.display = cromosPegadosIds.has(id) ? "flex" : "none";
+        else if(filtroActual === "faltantes") slot.style.display = !cromosPegadosIds.has(id) ? "flex" : "none";
     });
   }
 
@@ -797,7 +873,7 @@
   function activarEventoFlashOnline(minutos) {
     let expira = Date.now() + (minutos * 60 * 1000);
     fetch(fbDatabaseURL + "evento_flash_activo.json", { method: 'PUT', body: JSON.stringify({ activo: true, expira: expira }) })
-    .then(() => alert(`⏱️ Evento Relámpago de ${minutos} minutos activado globalmente.`));
+    .then(() => alert(`⏱️ Evento Relámpago de ${minutos} minutos activado.`));
   }
 
   function desactivarEventoFlashOnline() {
@@ -815,7 +891,7 @@
         
         let codSobre = "SORTEO-" + Math.random().toString(36).substring(2, 7).toUpperCase();
         fetch(fbDatabaseURL + "codigos_sobres/" + codSobre + ".json", { method: 'PUT', body: JSON.stringify({ usado: false }) }).then(() => {
-             alert(`🎰 Sorteo ejecutado en vivo. Ganador: ${ganador}. Se emitió el sobre invisible.`);
+             alert(`🎰 Sorteo ejecutado. Ganador: ${ganador}.`);
              setTimeout(() => {
                  fetch(fbDatabaseURL + "sorteo_activo.json", { method: 'PUT', body: JSON.stringify({ activo: false, ganador: "" }) });
              }, 8000);
@@ -861,7 +937,7 @@
             if(numKeys.length > 0) { let max = Math.max(...numKeys); nuevoId = max < 200 ? 200 : max + 1; }
         }
         fetch(fbDatabaseURL + "cromos_extra/" + nuevoId + ".json", { method: 'PUT', body: JSON.stringify({ nombre: nombre, url: url, seccion: seccion }) }).then(() => {
-            alert(`✅ Cromo de alumno creado con ID: N° ${nuevoId}`); location.reload();
+            alert(`✅ Cromo creado con ID: N° ${nuevoId}`); location.reload();
         });
     });
   }
