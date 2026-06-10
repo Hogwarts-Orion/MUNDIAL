@@ -125,7 +125,7 @@
   </div>
 
   <div id="wrapper-duendes">
-    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #004d40; text-align: center; border-top: 2px solid #ffcc00;">🪙 DUENDES FAMOSOS</div>
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #004d40; text-align: center; border-top: 2px solid #ffcc00;">Duendes Famosos</div>
     <div id="grid-duendes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,77,64,0.05);"></div>
   </div>
 
@@ -223,7 +223,7 @@
         🧙‍♂️ PANEL MASIVO: LOTE DE SOBRES PREMIUM
       </div>
       <p style="font-size: 10px; color: #999; text-align: center; margin: 0 0 10px 0;">
-        Generación instantánea de 50 códigos en texto para el Caldero Chorreante.
+        Generación instantánea y guardado automático en Firebase para el Caldero Chorreante.
       </p>
 
       <div style="display: flex; gap: 8px; margin-bottom: 10px;">
@@ -256,7 +256,6 @@
   let historialCodigosSesion = [];
   let esenciasMagicas = 0;
 
-  // Variables del minijuego cronometrado
   let juegoIncognitaId = "";
   let temporizadorJuego = null;
   let tiempoRestanteJuego = 15;
@@ -349,7 +348,7 @@
     }
   };
 
-  // FUNCIONES DE GENERACIÓN MASIVA PARA EL DIRECTOR
+  // NUEVA FUNCIÓN MASIVA: GENERA Y ASIGNA AUTOMÁTICAMENTE EN FIREBASE
   function generar50CodigosOrion() {
     const listaTextArea = document.getElementById('lista-codigos-generados');
     const btnCopiar = document.getElementById('btn-copiar-codigos');
@@ -359,17 +358,36 @@
     let codigos = [];
     const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     
+    // Objeto temporal para mandar todo a Firebase de un solo viaje
+    let loteSobres = {};
+
     for (let i = 0; i < 50; i++) {
       let codigoAleatorio = '';
       for (let j = 0; j < 5; j++) {
         codigoAleatorio += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
       }
-      codigos.push('ORION-SOBRE-' + codigoAleatorio);
+      let nuevoCodigoSobre = 'ORION-SOBRE-' + codigoAleatorio;
+      codigos.push(nuevoCodigoSobre);
+      
+      // Estructura oficial del sobre en falso (no usado)
+      loteSobres[nuevoCodigoSobre] = { usado: false };
     }
     
-    listaTextArea.value = codigos.join('\n');
-    listaTextArea.style.display = 'block';
-    btnCopiar.style.display = 'block';
+    // Guardamos masivamente los 50 códigos creados directo en tu base de datos Firebase
+    fetch(fbDatabaseURL + "codigos_sobres.json", {
+      method: 'PATCH', // PATCH une los nuevos códigos sin borrar los anteriores
+      body: JSON.stringify(loteSobres)
+    })
+    .then(() => {
+        // Una vez guardado con éxito en Firebase, los mostramos en el área de texto
+        listaTextArea.value = codigos.join('\n');
+        listaTextArea.style.display = 'block';
+        btnCopiar.style.display = 'block';
+        alert("🧙‍♂️ ¡50 Sobres Premium generados e inyectados con éxito en la base de datos!");
+    })
+    .catch(err => {
+        alert("❌ Error al conectar con Firebase: " + err);
+    });
   }
 
   function copiarCodigosAlPortapapeles() {
