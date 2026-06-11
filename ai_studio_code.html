@@ -1,0 +1,1212 @@
+--- START OF FILE index FUNCIONAAAL.html ---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álbum Digital Hogwarts Orión</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+<body style="background-color: #1e122b; margin: 0; padding: 20px; font-family: 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center;">
+
+<div style="width: 100%; max-width: 650px; background-color: #f3ebf7; background-image: radial-gradient(#e1cee9 1px, transparent 1px); background-size: 20px 20px; border: 4px solid #4a154b; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 24px rgba(0,0,0,0.5); box-sizing: border-box;">
+  
+  <div style="background: linear-gradient(135deg, #4a154b, #2c0c2e); padding: 20px; color: white; text-align: center; border-bottom: 4px solid #ffcc00; position: relative;">
+    <span style="font-size: 10px; font-weight: bold; letter-spacing: 4px; display: block; margin-bottom: 5px; color: #ffcc00;">COLECCIÓN VIRTUAL INTERACTIVA</span>
+    <b style="font-size: 26px; display: block; font-style: italic; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">HOGWARTS ORIÓN</b>
+    <div style="background-color: rgba(255, 204, 0, 0.2); border: 1px solid #ffcc00; border-radius: 20px; padding: 4px 15px; display: inline-block; margin-top: 10px; font-size: 11px; font-weight: bold; color: #ffcc00;">
+      👤 REGISTRO PERMANENTE EN LA NUBE
+    </div>
+    <div id="panel-conectados" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 10px; font-size: 9px; border: 1px solid #ffcc00;">
+      🟢 <span id="cant-conectados">0</span> Online
+    </div>
+  </div>
+
+  <div id="alerta-evento-flash" style="display: none; background: linear-gradient(90deg, #d35400, #c0392b); color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; border-bottom: 3px solid #ffcc00; animation: pulse 1.5s infinite;">
+    🚨 ¡EVENTO RELÁMPAGO ACTIVO! Quedan: <span id="reloj-evento-flash" style="font-family: monospace; font-size: 16px; color: #ffcc00;">00:00</span>
+    <button onclick="reclamarPremioFlash()" id="btn-reclamar-flash" style="margin-left: 10px; background: #ffcc00; color: #2c0c2e; border: none; padding: 3px 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;">Reclamar Regalo 🎁</button>
+  </div>
+
+  <div id="marquesina-sorteo" style="display: none; background: #27ae60; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; border-bottom: 2px solid #fff;">
+    🎉 ¡ATENCIÓN! El Director inició un sorteo... Ganador: <b id="ganador-sorteo-txt" style="color: #ffcc00;">Buscando...</b> 🏆
+  </div>
+
+  <div id="seccion-login-alumno" style="padding: 20px; background-color: white; text-align: center; border-bottom: 1px solid #d4bee0;">
+    <div style="font-size: 14px; font-weight: bold; color: #4a154b; margin-bottom: 5px;">👋 ¡BIENVENIDO AL ÁLBUM!</div>
+    <p style="font-size: 11px; color: #666; margin: 0 0 12px 0;">Ingresá tu nombre o apodo de personaje para guardar tu progreso de forma definitiva.</p>
+    <div style="display: flex; gap: 8px; max-width: 400px; margin: 0 auto;">
+      <input type="text" id="nombre-alumno-input" placeholder="Ej: MiNombreOApodo" style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #a282a9; font-size: 13px;">
+      <button onclick="identificarAlumno()" style="background: #2c0c2e; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Ingresar</button>
+    </div>
+  </div>
+
+  <div id="panel-alumno-activo" style="display: none; padding: 15px 20px; background-color: rgba(255,255,255,0.9); border-bottom: 1px solid #d4bee0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #eadaf2; padding: 6px 12px; border-radius: 6px; font-size: 12px;">
+      <span>🧙‍♂️ Alumno: <b id="nombre-perfil-txt" style="color: #4a154b;">-</b></span>
+      <span>✨ Esencia Mágica: <b id="polvo-esencia-txt" style="color: #e67e22;">0</b> 🔸</span>
+      <button onclick="cerrarSesion()" style="background: none; border: none; color: #ff3333; cursor: pointer; font-size: 11px; text-decoration: underline; font-weight: bold;">Salir</button>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+      <div style="background: #fff; border: 1px solid #d4bee0; border-radius: 8px; padding: 10px;">
+        <div style="font-size: 10px; font-weight: bold; color: #4a154b; margin-bottom: 4px;">🎫 FIGURITA INDIVIDUAL:</div>
+        <input type="text" id="codigo-alumno" placeholder="Código de cromo..." style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #a282a9; font-size: 11px; box-sizing: border-box; margin-bottom: 6px; text-transform: uppercase;">
+        <button onclick="canjearCodigoOnline()" style="width: 100%; background: #4a154b; color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Canjear</button>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, #e67e22, #d35400); border-radius: 8px; padding: 10px; color: white;">
+        <div style="font-size: 10px; font-weight: bold; margin-bottom: 4px;">🛍️ ABRIR SOBRE DIARIO:</div>
+        <input type="text" id="codigo-sobre-input" placeholder="ORION-SOBRE-XXXXX" style="width: 100%; padding: 6px; border-radius: 4px; border: none; font-size: 11px; box-sizing: border-box; margin-bottom: 6px; text-transform: uppercase; color: #333;">
+        <button onclick="canjearCodigoSobreOnline()" style="width: 100%; background: #fff; color: #d35400; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Abrir Sobre ✨</button>
+      </div>
+    </div>
+    <div id="resultado-sobre" style="margin-bottom: 10px; font-size: 11px; font-weight: bold; background: #222; color: #ffcc00; padding: 8px; border-radius: 6px; display: none; text-align: center; line-height: 1.4;"></div>
+
+    <div style="background: #2c0c2e; border: 1px solid #ffcc00; border-radius: 8px; padding: 10px; margin-bottom: 10px; color: white;">
+        <div style="font-size: 11px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 5px;">🏆 TOP COLECCIONISTAS ORIÓN</div>
+        <div id="lista-ranking-global" style="font-size: 10px; display: flex; flex-direction: column; gap: 3px;">
+          <div style="text-align: center; color: #888;">Cargando pergaminos...</div>
+        </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #111, #2c0c2e); border: 2px solid #ffcc00; border-radius: 8px; padding: 10px; color: white; margin-bottom: 10px;">
+      <div style="font-size: 12px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 6px; letter-spacing: 1px;">🧪 EL CALDERO CHORREANTE (TRANSMUTACIONES)</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button onclick="transmutarRepetidasPorSobre()" style="background: rgba(255,255,255,0.1); border: 1px solid #ffcc00; color: white; padding: 6px; font-size: 10px; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold;">
+          ♻️ Reciclar 3 Repetidas<br><span style="color: #ffcc00;">1 Vez al Día (Gratis)</span>
+        </button>
+        <button onclick="comprarSobreConEsencia()" style="background: rgba(255,255,255,0.1); border: 1px solid #e67e22; color: white; padding: 6px; font-size: 10px; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold;">
+          🔸 Gastar 50 Esencias<br><span style="color: #e67e22;">Por 1 Sobre Especial</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="background: #fff; border: 1px solid #a282a9; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+      <div style="font-size: 12px; font-weight: bold; color: #4a154b; text-align: center; margin-bottom: 6px;">🔮 MINIJUEGO DIARIO: ADIVINA LA CRIATURA</div>
+      
+      <div style="display: flex; justify-content: center; margin-bottom: 5px;">
+        <button id="btn-iniciar-juego-diario" onclick="intentarAbrirJuegoDiario()" style="background: #2c0c2e; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">🎯 JUGAR INTENTO DIARIO</button>
+      </div>
+      
+      <div id="juego-adivina" style="display: none; background: #f3ebf7; padding: 10px; border-radius: 6px; text-align: center; border: 1px dashed #4a154b; position: relative;">
+        <div style="position: absolute; top: 5px; right: 8px; background: #c0392b; color: white; font-family: monospace; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 4px;" id="reloj-cuenta-regresiva-juego">15s</div>
+        <div style="font-size: 12px; font-weight: bold; color: #333; margin-bottom: 8px; margin-right: 40px;">¿A quién pertenece este cromo? <span id="juego-id-incognita" style="color:#4a154b; font-weight: bold; background:#eadaf2; padding:2px 6px; border-radius:4px;">?</span></div>
+        <div style="display:grid; grid-template-columns: 1fr; gap: 5px; max-width: 280px; margin: 0 auto 6px auto;" id="opciones-juego-adivina"></div>
+        <div id="feedback-juego" style="font-size: 11px; font-weight: bold; margin-top: 4px; min-height: 16px;"></div>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; color: #555; text-align: center; font-weight: bold; margin-bottom: 8px;">
+      ✨ Tu progreso: <span id="progreso-texto" style="color: #4a154b;">0 / 126</span> pegados
+    </div>
+    <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin-bottom: 5px;">
+      <button id="filtro-todo" onclick="cambiarFiltro('todo')" style="background: #4a154b; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">Ver Todo</button>
+      <button id="filtro-pegados" onclick="cambiarFiltro('pegados')" style="background: #eadaf2; color: #4a154b; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">Ver Pegados</button>
+      <button id="filtro-faltantes" onclick="cambiarFiltro('faltantes')" style="background: #eadaf2; color: #4a154b; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">Ver Faltantes</button>
+      <div id="filtros-secciones-dinamicas" style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;"></div>
+    </div>
+    
+    <div id="contenedor-repetidas-alumno" style="display: none; margin-top: 10px; background: #fff8e7; border: 1px dashed #f39c12; border-radius: 6px; padding: 10px; font-size: 11px; color: #4a154b;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <b>📦 Mis Cromos Repetidos (para tradeo):</b>
+        <button onclick="copiarRepetidasAlPortapapeles()" style="background: #f39c12; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold;">📋 Copiar Lista</button>
+      </div>
+      <div id="lista-repetidas-txt" style="margin-top: 4px; font-weight: bold; font-family: monospace; background: rgba(255,255,255,0.6); padding: 5px; border-radius: 4px;">-</div>
+    </div>
+  </div>
+
+  <div id="notificacion" style="display: none; background-color: #27ae60; color: white; text-align: center; padding: 8px; font-size: 12px; font-weight: bold;">¡Cromo pegado con éxito! 🌟</div>
+
+  <div id="wrapper-especiales">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #4a154b; text-align: center;">⭐ CROMOS ESPECIALES HISTÓRICOS</div>
+    <div id="grid-especiales-101" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(255,255,255,0.4);"></div>
+  </div>
+
+  <div id="wrapper-vampiros">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #311b92; text-align: center; border-top: 2px solid #ffcc00;">🧛‍♂️ VAMPIROS FAMOSOS</div>
+    <div id="grid-vampiros" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(49,27,146,0.05);"></div>
+  </div>
+
+  <div id="wrapper-arpias">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #ad1457; text-align: center; border-top: 2px solid #ffcc00;">🦅 ARPÍAS FAMOSAS</div>
+    <div id="grid-arpias" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(173,20,87,0.05);"></div>
+  </div>
+
+  <div id="wrapper-gigantes">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #e65100; text-align: center; border-top: 2px solid #ffcc00;">👹 GIGANTES FAMOSOS</div>
+    <div id="grid-gigantes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(230,81,0,0.05);"></div>
+  </div>
+
+  <div id="wrapper-duendes">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #004d40; text-align: center; border-top: 2px solid #ffcc00;">Duendes Famosos</div>
+    <div id="grid-duendes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,77,64,0.05);"></div>
+  </div>
+
+  <div id="wrapper-dragones">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #b71c1c; text-align: center; border-top: 2px solid #ffcc00;">🐉 DRAGONES FAMOSOS</div>
+    <div id="grid-dragones" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(183,28,28,0.05);"></div>
+  </div>
+
+  <div style="padding: 12px 20px; font-size: 14px; font-weight: bold; color: #ffcc00; background-color: #2c0c2e; text-align: center; border-top: 4px solid #ffcc00;">🏰 ALUMNOS DE HOGWARTS ORIÓN</div>
+  
+  <div id="wrapper-gryffindor">
+    <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: white; background-color: #7f0909;">🦁 CASA GRYFFINDOR</div>
+    <div id="grid-casa-gryffindor" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(127,9,9,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
+  </div>
+
+  <div id="wrapper-slytherin">
+    <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: white; background-color: #0d6217;">🐍 CASA SLYTHERIN</div>
+    <div id="grid-casa-slytherin" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(13,98,23,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
+  </div>
+
+  <div id="wrapper-hufflepuff">
+    <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: #111; background-color: #ffcc00;">🦡 CASA HUFFLEPUFF</div>
+    <div id="grid-casa-hufflepuff" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(255,204,0,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #666; text-align: center;">No hay alumnos registrados.</p></div>
+  </div>
+
+  <div id="wrapper-ravenclaw">
+    <div style="padding: 8px 20px; font-size: 12px; font-weight: bold; color: white; background-color: #003366;">🦅 CASA RAVENCLAW</div>
+    <div id="grid-casa-ravenclaw" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,51,102,0.05); min-height: 40px;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p></div>
+  </div>
+
+  <div id="contenedor-secciones-dinamicas"></div>
+
+  <div style="background-color: #4a154b; padding: 12px; color: #ffcc00; font-weight: bold; font-size: 11px; text-align: center; border-top: 3px solid #ffcc00;">🏰 HOGWARTS ORIÓN © 2026</div>
+</div>
+
+<div id="modal-zoom" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div style="position:relative; max-width:400px; width:100%; background:#f3ebf7; border:4px solid #ffcc00; border-radius:15px; overflow:hidden; box-shadow:0 0 30px #ffcc00;">
+        <button onclick="cerrarModal()" style="position:absolute; top:10px; right:10px; background:#ff3333; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold;">X</button>
+        <div id="modal-content-img" style="width:100%; height:300px; background:#2c0c2e; display:flex; align-items:center; justify-content:center;"></div>
+        <div style="padding:15px; max-height:250px; overflow-y:auto;">
+            <b id="modal-nombre" style="font-size:18px; color:#4a154b; display:block; text-align:center; margin-bottom:10px;">Nombre</b>
+            <div id="modal-historia" style="font-size:12px; color:#333; line-height:1.5; text-align:justify; font-style:italic;">Generando historia mágica...</div>
+        </div>
+    </div>
+</div>
+
+<div style="font-size: 12px; color: #ff9999; margin-top: 10px; max-width: 650px; text-align: center; width: 100%;">
+  ⚠️ <i>Los hechizos de duelo cargados en el backend quedan reservados exclusivamente para las mecánicas del sistema interactivo de combates del Director.</i>
+</div>
+
+<div style="width: 100%; max-width: 650px; margin-top: 30px; background: #222; border: 3px solid #ff3333; border-radius: 12px; padding: 15px; color: white; box-sizing: border-box;">
+  <div style="font-weight: bold; color: #ff3333; margin-bottom: 12px;">🛠️ PANEL DEL DIRECTOR</div>
+  <div id="admin-login" style="display: flex; gap: 10px; margin-bottom: 10px;">
+    <input type="password" id="admin-pass" placeholder="Clave de Director..." style="flex-grow: 1; padding: 6px; border-radius: 4px;">
+    <button onclick="verificarAdmin()" style="background: #ff3333; color: white; border: none; padding: 6px 15px; cursor: pointer; font-weight: bold;">Acceder</button>
+  </div>
+  
+  <div id="admin-controls" style="display: none;">
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 2px solid #27ae60;">
+      <b style="color: #27ae60; font-size: 11px; display: block; margin-bottom: 6px;">📊 EXPORTACIÓN ADMINISTRATIVA:</b>
+      <button onclick="exportarDatosExcel()" style="width: 100%; background: #27ae60; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer;">Descargar Base de Datos (Excel)</button>
+    </div>
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 2px solid #8a6893;">
+        <b style="color: #d4bee0; font-size: 11px; display: block; margin-bottom: 6px;">🆕 GESTIÓN DE SECCIONES DINÁMICAS:</b>
+        <input type="text" id="nueva-sec-nombre" placeholder="Nombre (ej: Mortífagos)" style="width: 100%; padding: 5px; margin-bottom: 5px;">
+        <input type="color" id="nueva-sec-color" value="#4a154b" style="width: 100%; height: 30px; margin-bottom: 5px;">
+        <input type="text" id="nueva-sec-deco" placeholder="Icono/Emoji (ej: 💀)" style="width: 100%; padding: 5px; margin-bottom: 5px;">
+        <button onclick="crearSeccionDinamica()" style="width: 100%; background: #8a6893; color: white; border: none; padding: 7px; font-weight: bold; cursor: pointer;">Crear Sección Nueva</button>
+    </div>
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 2px solid #8a6893;">
+      <b style="color: #d4bee0; font-size: 11px; display: block; margin-bottom: 6px;">🔍 INSPECTOR DE ÁLBUMES (PROGRESO ALUMNOS):</b>
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="text" id="inspeccionar-alumno-input" placeholder="Nombre exacto del alumno..." style="flex-grow: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #222; color: white; font-size: 12px;">
+        <button onclick="inspeccionarAlbumAlumno()" style="background: #8a6893; color: white; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;">Revisar</button>
+      </div>
+      <div id="resultado-inspeccion" style="background: #050505; border: 1px dashed #444; padding: 8px; border-radius: 4px; font-size: 11px; display: none; max-height: 150px; overflow-y: auto;">
+        <div id="inspeccion-progreso" style="font-weight: bold; color: #ffcc00; margin-bottom: 4px;"></div>
+        <div id="inspeccion-lista-cromos" style="color: #ccc; font-family: monospace; white-space: normal; word-break: break-all; line-height: 1.4;"></div>
+      </div>
+    </div>
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 2px solid #ff3333;">
+      <b style="color: #ff9999; font-size: 11px; display: block; margin-bottom: 6px;">🚨 VERIFICADOR ANTIFRAUDE DE CÓDIGOS:</b>
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="text" id="verificar-codigo-input" placeholder="Pegar el código sospechoso aquí..." style="flex-grow: 1; padding: 6px; border-radius: 4px; border: 1px solid #555; background: #222; color: white; font-size: 12px; text-transform: uppercase;">
+        <button onclick="rastrearEstadoCodigo()" style="background: #ff3333; color: white; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;">Auditar</button>
+      </div>
+      <div id="resultado-auditoria-codigo" style="background: #000; border: 1px solid #333; padding: 10px; border-radius: 4px; font-size: 12px; display: none; text-align: center;"></div>
+    </div>
+    <div style="background: #111; padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed #d35400;">
+      <b style="color: #e67e22; font-size: 11px;">⏱️ LANZAR EVENTO FLASH CON CUENTA REGRESIVA:</b>
+      <div style="display: flex; gap: 5px; margin-top: 6px;">
+        <button onclick="activarEventoFlashOnline(5)" style="background: #d35400; color:white; border:none; padding:5px; font-size:10px; font-weight:bold; cursor:pointer; flex-grow:1;">💥 LOTE DE 5 MIN</button>
+        <button onclick="activarEventoFlashOnline(10)" style="background: #c0392b; color:white; border:none; padding:5px; font-size:10px; font-weight:bold; cursor:pointer; flex-grow:1;">💥 LOTE DE 10 MIN</button>
+        <button onclick="activarEventoFlashOnline(15)" style="background: #962d22; color:white; border:none; padding:5px; font-size:10px; font-weight:bold; cursor:pointer; flex-grow:1;">💥 LOTE DE 15 MIN</button>
+        <button onclick="desactivarEventoFlashOnline()" style="background: #555; color:white; border:none; padding:5px; font-size:10px; cursor:pointer;">APAGAR</button>
+      </div>
+    </div>
+
+    <div style="background: #111; padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed #27ae60;">
+      <b style="color: #27ae60; font-size: 11px;">🏆 TOMBOLA DE SORTEOS EN VIVO (MUNDIAL/COMUNIDAD):</b>
+      <button onclick="lanzarSorteoComunitario()" style="width:100%; background:#27ae60; color:white; border:none; font-weight:bold; padding:8px; margin-top:6px; cursor:pointer; font-size:11px; border-radius:4px;">🎰 DISPARAR SORTEO DE SOBRE ENTRE ALUMNOS ACTIVOS</button>
+    </div>
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+        <b style="color: #ffcc00; font-size: 11px;">🎫 EMISIÓN DE CÓDIGOS DE RECOMPENSAS:</b>
+        <select id="select-cromo" style="width: 100%; padding: 6px; margin: 8px 0; background: #333; color: white; border: 1px solid #555; font-size: 11px;"></select>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+          <button onclick="crearCodigoEnFirebase()" style="background: #27ae60; color: white; border: none; padding: 6px; font-weight: bold; cursor: pointer; font-size: 10px;">CROMO SELECCIONADO</button>
+          <button onclick="crearCodigoAleatorioEnFirebase()" style="background: #2980b9; color: white; border: none; padding: 6px; font-weight: bold; cursor: pointer; font-size: 10px;">CROMO ALEATORIO</button>
+        </div>
+        <button onclick="crearCodigoSobreEnFirebase()" style="width: 100%; background: #e67e22; color: white; border: none; padding: 8px; font-weight: bold; cursor: pointer; font-size: 11px; border-radius: 4px;">📦 GENERAR CÓDIGO DE SOBRE (3 CHROMOS)</button>
+        
+        <div id="contenedor-resultado" style="display:none; margin-top: 8px; background: #000; border: 1px dashed #ffcc00; padding: 6px; text-align: center;">
+            <b id="codigo-generado-txt" style="font-size: 16px; color: #ffcc00; font-family: monospace;">XXXX-XXXX</b>
+        </div>
+        <div style="margin-top: 8px; background: #1a1a1a; padding: 4px; border-radius: 4px; font-size: 10px;">
+          <div id="historial-codigos-director" style="color: #58d68d; font-family: monospace; white-space: pre-line;">Ninguno generado.</div>
+        </div>
+    </div>
+
+    <div style="background: #111; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+        <b style="color: #ffcc00; font-size: 11px;">➕ INYECTAR NUEVO ALUMNO PERSONALIZADO (PROTECCIÓN IDs):</b>
+        <input type="text" id="nuevo-cromo-nombre" placeholder="Nombre del personaje..." style="width: 100%; padding: 6px; margin: 4px 0; box-sizing: border-box; font-size:11px;">
+        <input type="text" id="nuevo-cromo-imagen" placeholder="URL Imagen..." style="width: 100%; padding: 6px; margin: 4px 0; box-sizing: border-box; font-size:11px;">
+        <select id="nuevo-cromo-seccion" style="width: 100%; padding: 6px; background: #333; color: white; margin-bottom: 8px; font-size:11px;">
+            <option value="especiales">Sección General</option>
+            <option value="Gryffindor">Gryffindor 🦁</option>
+            <option value="Slytherin">Slytherin 🐍</option>
+            <option value="Hufflepuff">Hufflepuff 🦡</option>
+            <option value="Ravenclaw">Ravenclaw 🦅</option>
+        </select>
+        <button onclick="crearNuevoCromoColeccion()" style="width: 100%; background: #4a154b; color: white; border: 1px solid #ffcc00; padding: 8px; font-weight: bold; cursor: pointer; font-size:11px;">GUARDAR EN FIREBASE</button>
+    </div>
+
+    <div style="background: #0d0d0d; border: 2px solid #ffcc00; border-radius: 8px; padding: 12px; margin-top: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.6);">
+      <div style="font-size: 12px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase;">
+        🧙‍♂️ PANEL MASIVO: LOTE DE SOBRES PREMIUM
+      </div>
+      <p style="font-size: 10px; color: #999; text-align: center; margin: 0 0 10px 0;">
+        Generación instantánea y guardado automático en Firebase para el Caldero Chorreante.
+      </p>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <button onclick="generar50CodigosOrion()" style="flex: 1; background: #ffcc00; color: #111; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">
+          🎲 Generar 50 Códigos
+        </button>
+        <button id="btn-copiar-codigos" onclick="copiarCodigosAlPortapapeles()" style="flex: 1; background: #4a154b; color: white; border: 1px solid #ffcc00; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; display: none;">
+          📋 Copiar Lista Completa
+        </button>
+      </div>
+
+      <textarea id="lista-codigos-generados" readonly style="width: 100%; height: 140px; background: #1a1a1a; color: #00ffcc; border: 1px solid #333; border-radius: 4px; padding: 8px; font-family: monospace; font-size: 11px; box-sizing: border-box; display: none; resize: none;"></textarea>
+      
+      <div id="aviso-copiado" style="text-align: center; color: #27ae60; font-size: 11px; font-weight: bold; margin-top: 5px; display: none;">
+        ¡✓ Códigos copiados al portapapeles con éxito!
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let pegadas = 0;
+  let totalVisibles = 126;
+  const fbDatabaseURL = "https://album-75178-default-rtdb.firebaseio.com/";
+  let miIdAlbum = ""; 
+  let filtroActual = "todo"; 
+  let cromosPegadosIds = new Set(); 
+  let cromosRepetidosCantidades = {}; 
+  let stringGlobalRepetidas = ""; 
+  let historialCodigosSesion = [];
+  let esenciasMagicas = 0;
+
+  let juegoIncognitaId = "";
+  let temporizadorJuego = null;
+  let tiempoRestanteJuego = 15;
+  let juegoTerminadoEnTurno = false;
+
+  const sonidos = {
+    sobre: new Audio('https://www.myinstants.com/media/sounds/magic-wand-shimmer.mp3'),
+    canje: new Audio('https://www.myinstants.com/media/sounds/level-up-magic.mp3'),
+    error: new Audio('https://www.myinstants.com/media/sounds/8-bit-error.mp3'),
+    raro: new Audio('https://www.myinstants.com/media/sounds/tada.mp3')
+  };
+  function playSound(tipo) { if(sonidos[tipo]) sonidos[tipo].play(); }
+
+  const infoCromos = {
+    "1": "Merlín", "2": "Cornelius Agripa", "3": "Elfrida Clagg", "4": "Grogan Stump", "5": "Gulliver Pokeby",
+    "6": "Glanmore Peakes", "7": "Hesper Starky", "8": "Derwent Shimpling", "9": "Gunhilda De Gorsemoor", "10": "Burdock Muldoon",
+    "11": "Herpo El Loco", "12": "Merwyn El Malicioso", "13": "Andros El Invensible", "14": "Fulbert El Miedoso", "15": "Paracelso",
+    "16": "Cliodna", "17": "Morgan Lee Fay", "18": "Uric El Chiflado", "19": "Newt Scamander", "20": "Wendelin La Rara",
+    "21": "Lord Stoddard Withers", "22": "Cirse", "23": "Glenda Chittock", "24": "Adalbert Waffling", "25": "Perpetua Fancourt",
+    "26": "Almeric Sawbridge", "27": "Mirabella Plunkett", "28": "Tilly Toke", "29": "Archibald Alderton", "30": "Artemisia Lufkin",
+    "31": "Balfour Blane", "32": "Bridget Wenlock", "33": "Beaumont Marjoribanks", "34": "Donaghan Tremlett", "35": "Bowman Wright",
+    "36": "Joscelind Wadcock", "37": "Cassandra Vablatsky", "38": "Chauncey Oldridge", "39": "Gwenog Jones", "40": "Carlotta Pinkstone",
+    "41": "Godric Gryffindor", "42": "Crispín Cronk", "43": "Cyprian Youdle", "44": "Devlin Whitehorn", "45": "Dunbar Oglethorpe",
+    "46": "Miranda Goshawk", "47": "Edgar Stroulger", "48": "Salazar Slytherin", "49": "Elladora Ketteridge", "50": "Musidora Barkwith",
+    "51": "Ethelred el Siempre Listo", "52": "Felix Summerbee", "53": "Greta Catchlove", "54": "Gaspard Shingleton", "55": "Honoria Nutcombe",
+    "56": "Gideon Crumb", "57": "Gifford Ollerton", "58": "Glover Hipworth", "59": "Gregory El Adulador", "60": "Laverne de Montmorency",
+    "61": "Havelock Sweeting", "62": "Ignatia Wildsmith", "63": "Herman Wintringham", "64": "Jocunda Sykes", "65": "Gondoline Oliphant",
+    "66": "Flavius Belby", "67": "Justus Pilliwickle", "68": "Kirley Duke McCormack", "69": "Bertie Bott", "70": "Leopoldina Smethwyck",
+    "71": "Maeva Queen", "72": "Helga Hufflepuff", "73": "Mopsus", "74": "Montague Knightley", "75": "Mungo Bonham",
+    "76": "Myron Wagtail", "77": "Norvel Twonk", "78": "Orsino Thruston", "79": "Oswald Beamish", "80": "Beatrix Bloxam",
+    "81": "Quong Po", "82": "Rowena Ravenclaw", "83": "Roderick Plumpton", "84": "Roland Kegg", "85": "Blenheim Stalk",
+    "86": "Dorcas Wellbeloved", "87": "Thaddeus Thurkell", "88": "Celestina Warbeck", "89": "Alberta Toothill", "90": "Sacharissa Tugwood",
+    "91": "Wilfred Elphick", "92": "Xavier Rastrick", "93": "Heathcote Barbary", "94": "Merton Graves", "95": "Yardley Platt",
+    "96": "Hengist De Woodcroft", "97": "Alberic Grunnion", "98": "Dymphna Furmage", "99": "Daisy Dodderidge", "100": "Harry Potter",
+    "101": "Albus Dumbledore",
+    "102": "Sir Herbert varney", "103": "Amarillo lestoat", "104": "Lady carmilla sanguina", "105": "Blodwyn bludd", "106": "Conde Vlad Drácula",
+    "107": "Babayaga", "108": "La reina maladora grymm", "109": "Leticia somnolens", "110": "Vieja madre Hubbard", "111": "Cordelia misericordia",
+    "112": "Bran el sediento de sangre", "113": "Cíclope", "114": "Goliath", "115": "Morholt", "116": "Hengist de upper Barton",
+    "117": "Eargit el feo", "118": "Alguff el horroroso", "119": "Ug el falton", "120": "Urg el sucio", "121": "Gringott",
+    "122": "El galés verde común", "123": "Hebrido negro", "124": "Colacuerno húngaro", "125": "Longhorn rumano", "126": "Ridgeback noruego"
+  };
+
+  const linksPostimagesFijos = {
+    "1": "https://i.postimg.cc/R3GqhsDv/1.jpg", "2": "https://i.postimg.cc/kVwDG1pq/2.jpg", "3": "https://i.postimg.cc/WF3zkGBc/3.jpg",
+    "4": "https://i.postimg.cc/MMTHQ7h4/4.jpg", "5": "https://i.postimg.cc/ZBRnd8GT/5.jpg", "6": "https://i.postimg.cc/tZTJx3KC/6.jpg",
+    "7": "https://i.postimg.cc/FdRzLyMK/7.jpg", "8": "https://i.postimg.cc/MMTHQ7CT/8.jpg", "9": "https://i.postimg.cc/WF3zkGBJ/9.jpg",
+    "10": "https://i.postimg.cc/tZMTt1bg/10.jpg", "11": "https://i.postimg.cc/MMFTbcwc/11.jpg", "12": "https://i.postimg.cc/LYbXBqSg/12.jpg",
+    "13": "https://i.postimg.cc/9RnMt429/13.jpg", "14": "https://i.postimg.cc/cgbHMKWB/14.jpg", "15": "https://i.postimg.cc/LYbXBqSx/15.jpg",
+    "16": "https://i.postimg.cc/cgbHMKWz/16.jpg", "17": "https://i.postimg.cc/q667mkBx/17.jpg", "18": "https://i.postimg.cc/RJJ0PMCg/18.jpg",
+    "19": "https://i.postimg.cc/cttJDs1k/19.jpg", "20": "https://i.postimg.cc/zHHfdJDQ/20.jpg", "21": "https://i.postimg.cc/Pvvq6tfB/21.jpg",
+    "22": "https://i.postimg.cc/tnngrXCQ/22.jpg", "23": "https://i.postimg.cc/q667mkMH/23.jpg", "24": "https://i.postimg.cc/644QH95N/24.jpg",
+    "25": "https://i.postimg.cc/N220Ngfs/25.jpg", "26": "https://i.postimg.cc/p55d02XL/26.jpg", "27": "https://i.postimg.cc/6T8T6hV4/27.jpg",
+    "28": "https://i.postimg.cc/4nYn41vh/28.jpg", "29": "https://i.postimg.cc/bdZdYR01/29.jpg", "30": "https://i.postimg.cc/4nYn41vQ/30.jpg",
+    "31": "https://i.postimg.cc/Yjvj2xN8/31.jpg", "32": "https://i.postimg.cc/0rzr5CGc/32.jpg", "33": "https://i.postimg.cc/1484RK0b/33.jpg",
+    "34": "https://i.postimg.cc/yWDW6TXq/34.jpg", "35": "https://i.postimg.cc/yW2xDSnb/35.jpg", "36": "https://i.postimg.cc/dDg3hTnp/36.jpg",
+    "37": "https://i.postimg.cc/t78JsVDK/37.jpg", "38": "https://i.postimg.cc/K4Cj1gJX/38.jpg", "39": "https://i.postimg.cc/mhKkPF8R/39.jpg",
+    "40": "https://i.postimg.cc/xqB8Xbt2/40.jpg", "41": "https://i.postimg.cc/Rq2hWnXC/41.jpg", "42": "https://i.postimg.cc/kDLG2tfg/42.jpg",
+    "43": "https://i.postimg.cc/mhKkPF8t/43.jpg", "44": "https://i.postimg.cc/hhNvX7pJ/44.jpg", "45": "https://i.postimg.cc/xcHCMT4j/45.jpg",
+    "46": "https://i.postimg.cc/vc9BfHNm/46.jpg", "47": "https://i.postimg.cc/4mtdVNSn/47.jpg", "48": "https://i.postimg.cc/HV5xXshV/48.jpg",
+    "49": "https://i.postimg.cc/Whr3gbHD/49.jpg", "50": "https://i.postimg.cc/TpmwgY4W/50.jpg", "51": "https://i.postimg.cc/VdM6nLVX/51.jpg",
+    "52": "https://i.postimg.cc/9rTMZFnT/52.jpg", "53": "https://i.postimg.cc/dLd1rtx2/53.jpg", "54": "https://i.postimg.cc/jLN5PdFh/54.jpg",
+    "55": "https://i.postimg.cc/1f6tw5jH/55.jpg", "56": "https://i.postimg.cc/PPZxYrRK/56.jpg", "57": "https://i.postimg.cc/gnRJ8kTM/57.jpg",
+    "58": "https://i.postimg.cc/FY4KZ5Mb/58.jpg", "59": "https://i.postimg.cc/68XQ0Jkd/59.jpg", "60": "https://i.postimg.cc/5XVt3dhm/60.jpg",
+    "61": "https://i.postimg.cc/nXJLkbyT/61.jpg", "62": "https://i.postimg.cc/ZWSqctG7/62.jpg", "63": "https://i.postimg.cc/LJpsTKc0/63.jpg",
+    "64": "https://i.postimg.cc/87SCHQ23/64.jpg", "65": "https://i.postimg.cc/YvHS3K5Z/65.jpg", "66": "https://i.postimg.cc/9Dhfp56v/66.jpg",
+    "67": "https://i.postimg.cc/sMr2cCFr/67.jpg", "68": "https://i.postimg.cc/NKc04vht/68.jpg", "69": "https://i.postimg.cc/75kLVrvw/69.jpg",
+    "70": "https://i.postimg.cc/87mzXXGx/70.jpg", "71": "https://i.postimg.cc/YvzCDD7J/71.jpg", "72": "https://i.postimg.cc/yDy8ppBH/72.jpg",
+    "73": "https://i.postimg.cc/9DYQggV2/73.jpg", "74": "https://i.postimg.cc/Wdw1YYjs/74.jpg", "75": "https://i.postimg.cc/217S99mj/75.jpg",
+    "76": "https://i.postimg.cc/fVfRqqZb/76.jpg", "77": "https://i.postimg.cc/tsN4vvyY/77.jpg", "78": "https://i.postimg.cc/CRsxrrY5/78.jpg",
+    "79": "https://i.postimg.cc/TKJ3NNGK/79.jpg", "80": "https://i.postimg.cc/bZ9wVV82/80.jpg", "81": "https://i.postimg.cc/hX1tZZgd/81.jpg",
+    "82": "https://i.postimg.cc/FYVHCCmc/82.jpg", "83": "https://i.postimg.cc/87mzXXDL/83.jpg", "84": "https://i.postimg.cc/cK14p74C/84.jpg",
+    "85": "https://i.postimg.cc/R3CVk1VN/85.jpg", "86": "https://i.postimg.cc/HJWsq0sc/86.jpg", "87": "https://i.postimg.cc/CZML3CLf/87.jpg",
+    "88": "https://i.postimg.cc/Z9YKGPKd/88.jpg", "89": "https://i.postimg.cc/hJ4Pk8Pb/89.jpg", "90": "https://i.postimg.cc/v18HJ7Hz/90.jpg",
+    "91": "https://i.postimg.cc/GB3hWPhK/91.jpg", "92": "https://i.postimg.cc/WDpbBmb5/92.jpg", "93": "https://i.postimg.cc/qtBMPcMF/93.jpg",
+    "94": "https://i.postimg.cc/Z9YKGPKg/94.jpg", "95": "https://i.postimg.cc/VSsLx9Lp/95.jpg", "96": "https://i.postimg.cc/PL6rTLPM/96.jpg",
+    "97": "https://i.postimg.cc/cKD40KrD/97.jpg", "98": "https://i.postimg.cc/v1PHb1cq/98.jpg", "99": "https://i.postimg.cc/94xFC4rN/99.jpg",
+    "100": "https://i.postimg.cc/cKD40Krb/100.jpg", "101": "https://i.postimg.cc/Lqy62qnc/101.jpg",
+    "102": "https://i.postimg.cc/jdsd02Bj/102.jpg", "103": "https://i.postimg.cc/dtqtP3g1/103.jpg", "104": "https://i.postimg.cc/ZKTKtnXC/104.jpg",
+    "105": "https://i.postimg.cc/0282Rjhr/105.jpg", "106": "https://i.postimg.cc/ncHcbrNs/106.jpg", "107": "https://i.postimg.cc/kXX9YZtJ/107.jpg",
+    "108": "https://i.postimg.cc/bNN8VM2J/108.jpg", "109": "https://i.postimg.cc/WbbjYKJ1/109.jpg", "110": "https://i.postimg.cc/X7731hyv/110.jpg",
+    "111": "https://i.postimg.cc/gkkdt56x/111.jpg", "112": "https://i.postimg.cc/3JJ7f6Dy/112.jpg", "113": "https://i.postimg.cc/zXX52MRb/113.jpg",
+    "114": "https://i.postimg.cc/bNN8VM2n/114.jpg", "115": "https://i.postimg.cc/m22RpqF7/115.jpg", "116": "https://i.postimg.cc/VLL1ZTbj/116.jpg",
+    "117": "https://i.postimg.cc/X7731hyf/117.jpg", "118": "https://i.postimg.cc/fTTZqF07/118.jpg", "119": "https://i.postimg.cc/TYYGNSWq/119.jpg",
+    "120": "https://i.postimg.cc/X7731hyg/120.jpg", "121": "https://i.postimg.cc/zXX52MRj/121.jpg", "122": "https://i.postimg.cc/yYYBp5Sv/122.jpg",
+    "123": "https://i.postimg.cc/tCCyvfVB/123.jpg", "124": "https://i.postimg.cc/m22RpqFj/124.jpg", "125": "https://i.postimg.cc/m2X4vwQY/125.jpg",
+    "126": "https://i.postimg.cc/Kvqb6Nn7/126.jpg"
+  };
+
+  let imagenesBaseDatos = {};
+  let seccionesConfig = {
+      "Gryffindor": { color: "#7f0909", deco: "🦁", desc: "Casa de los valientes." },
+      "Slytherin": { color: "#0d6217", deco: "🐍", desc: "Casa de los astutos." },
+      "Hufflepuff": { color: "#ffcc00", deco: "🦡", desc: "Casa de los leales." },
+      "Ravenclaw": { color: "#003366", deco: "🦅", desc: "Casa de los sabios." },
+      "Azkaban": { color: "#1a1a1a", deco: "⛓️", desc: "PRISIONEROS DE AZKABAN" }
+  };
+
+  window.onload = function() {
+    dibujarEstructuraEspeciales126();
+    inicializarSeccionesFirebase();
+    escucharEventosYRealtime();
+    if(localStorage.getItem('orion_user_name_id')) {
+        miIdAlbum = localStorage.getItem('orion_user_name_id');
+        mostrarInterfazAlumnoActivo();
+    }
+  };
+
+  // INICIO CAMBIO
+  function inicializarSeccionesFirebase() {
+    fetch(fbDatabaseURL + "secciones_config.json").then(r=>r.json()).then(data => {
+        const azkabanDefault = {
+            "Azkaban": { color: "#1a1a1a", deco: "⛓️", desc: "PRISIONEROS DE AZKABAN" }
+        };
+        fetch(fbDatabaseURL + "secciones_config.json", { method: 'PATCH', body: JSON.stringify(azkabanDefault) }).then(() => {
+            const prisioneros = [
+                {n: "Cris DelaCour", i: "https://i.postimg.cc/ncHcbrNs/106.jpg"},
+                {n: "Fernando Greengrass", i: "https://i.postimg.cc/kXX9YZtJ/107.jpg"},
+                {n: "Ana Black", i: "https://i.postimg.cc/bNN8VM2J/108.jpg"},
+                {n: "Gabo Sayre", i: "https://i.postimg.cc/WbbjYKJ1/109.jpg"},
+                {n: "Odette Salvatore", i: "https://i.postimg.cc/X7731hyv/110.jpg"}
+            ];
+            let promises = prisioneros.map((p, idx) => {
+                return fetch(fbDatabaseURL + "cromos_extra/" + (300 + idx) + ".json", { 
+                    method: 'PUT', body: JSON.stringify({ nombre: p.n, url: p.i, seccion: "Azkaban" }) 
+                });
+            });
+            Promise.all(promises).then(() => {
+                if(data) { seccionesConfig = {...seccionesConfig, ...data}; }
+                renderizarSeccionesDinamicas();
+                actualizarSelectoresSecciones();
+                cargarCromosDinamicosDesdeNube(); // Se carga después de renderizar los contenedores
+            });
+        });
+    });
+  }
+  // FIN CAMBIO
+
+  function crearSeccionDinamica() {
+    const nombre = document.getElementById('nueva-sec-nombre').value.trim();
+    const color = document.getElementById('nueva-sec-color').value;
+    const deco = document.getElementById('nueva-sec-deco').value.trim();
+    if(!nombre) return;
+    const cleanId = nombre.replace(/\s+/g, '_');
+    const data = { [cleanId]: { color: color, deco: deco, desc: "Nueva sección de Hogwarts." }};
+    fetch(fbDatabaseURL + "secciones_config.json", { method: 'PATCH', body: JSON.stringify(data) }).then(() => {
+        alert("Sección creada."); location.reload();
+    });
+  }
+
+  // INICIO CAMBIO
+  function renderizarSeccionesDinamicas() {
+    const cont = document.getElementById('contenedor-secciones-dinamicas');
+    const fil = document.getElementById('filtros-secciones-dinamicas');
+    cont.innerHTML = ""; fil.innerHTML = "";
+    
+    Object.keys(seccionesConfig).forEach(id => {
+        if(["Gryffindor", "Slytherin", "Hufflepuff", "Ravenclaw"].includes(id)) return;
+        
+        const sec = seccionesConfig[id];
+        const label = id === "Azkaban" ? "PRISIONEROS DE AZKABAN" : id.toUpperCase();
+        const html = `
+            <div id="wrapper-${id}">
+                <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: ${sec.color}; text-align: center; border-top: 2px solid #ffcc00;">
+                    ${sec.deco} ${label}
+                </div>
+                <div id="grid-casa-${id.toLowerCase()}" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; background-color: rgba(0,0,0,0.05); min-height: 40px;">
+                    <p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos registrados.</p>
+                </div>
+            </div>`;
+        cont.insertAdjacentHTML('beforeend', html);
+        
+        fil.insertAdjacentHTML('beforeend', `<button id="filtro-${id.toLowerCase()}" onclick="cambiarFiltro('${id.toLowerCase()}')" style="background: #eadaf2; color: #4a154b; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;">${sec.deco} ${id === "Azkaban" ? "Azkaban" : id}</button>`);
+    });
+  }
+  // FIN CAMBIO
+
+  function actualizarSelectoresSecciones() {
+    const sel = document.getElementById('nuevo-cromo-seccion');
+    const currentVal = sel.value;
+    sel.innerHTML = `<option value="especiales">Sección General</option>`;
+    Object.keys(seccionesConfig).forEach(id => {
+        sel.insertAdjacentHTML('beforeend', `<option value="${id}">${id} ${seccionesConfig[id].deco}</option>`);
+    });
+    sel.value = currentVal;
+  }
+
+  function exportarDatosExcel() {
+    fetch(fbDatabaseURL + "usuarios.json").then(r=>r.json()).then(data => {
+        if(!data) { alert("No hay datos."); return; }
+        let rows = [];
+        Object.keys(data).forEach(user => {
+            let userStickers = Object.keys(data[user]).filter(k => data[user][k] === true).join(", ");
+            rows.push({ Alumno: user, "Cromos Pegados": userStickers, Total: Object.keys(data[user]).filter(k => data[user][k] === true).length });
+        });
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Usuarios_Orion");
+        XLSX.writeFile(workbook, "Base_Datos_Hogwarts_Orion.xlsx");
+    });
+  }
+
+  function inspeccionarAlbumAlumno() {
+    let alumnoBuscar = document.getElementById('inspeccionar-alumno-input').value.trim();
+    if(alumnoBuscar === "") { alert("Por favor ingresá un nombre."); return; }
+    let idBuscar = alumnoBuscar.replace(/[\.\#\$\[\]]/g, "_");
+    
+    const divRes = document.getElementById('resultado-inspeccion');
+    const txtProgreso = document.getElementById('inspeccion-progreso');
+    const txtLista = document.getElementById('inspeccion-lista-cromos');
+    
+    fetch(fbDatabaseURL + "usuarios/" + idBuscar + ".json")
+    .then(res => res.json())
+    .then(data => {
+        divRes.style.display = 'block';
+        if(!data) {
+            txtProgreso.innerText = `👤 Alumno: ${alumnoBuscar}`;
+            txtLista.innerHTML = `<span style="color:#ff3333;">El alumno no tiene progreso registrado o no existe.</span>`;
+            return;
+        }
+        
+        let pegados = [];
+        Object.keys(data).forEach(id => {
+            if(data[id] === true && infoCromos[id]) {
+                pegados.push(`N° ${id} (${infoCromos[id]})`);
+            }
+        });
+        
+        txtProgreso.innerText = `👤 Alumno: ${alumnoBuscar} (${pegados.length} / ${totalVisibles} Pegados)`;
+        if(pegados.length === 0) {
+            txtLista.innerText = "No tiene ningún cromo pegado todavía.";
+        } else {
+            txtLista.innerText = pegados.join(" | ");
+        }
+    })
+    .catch(err => { alert("Error al conectar con la base de datos: " + err); });
+  }
+
+  function rastrearEstadoCodigo() {
+    let codVerificar = document.getElementById('verificar-codigo-input').value.trim().toUpperCase();
+    const cajaResultado = document.getElementById('resultado-auditoria-codigo');
+    if(codVerificar === "") { alert("Ingresá un código para auditar."); return; }
+
+    cajaResultado.style.display = "block";
+    cajaResultado.innerHTML = "<span style='color: #ccc;'>Rastreando en los servidores de la red Flú...</span>";
+
+    fetch(fbDatabaseURL + "codigos/" + codVerificar + ".json")
+    .then(res => res.json())
+    .then(dataIndividual => {
+        if(dataIndividual) {
+            let cromoAsociado = dataIndividual.cromo_id;
+            let nombreCromo = infoCromos[cromoAsociado] || "Desconocido";
+            if(dataIndividual.usado === true) {
+                cajaResultado.innerHTML = `
+                    <div style="color: #ff3333; font-weight: bold; font-size: 13px;">❌ CÓDIGO YA CANJEADO</div>
+                    <div style="color: #aaa; margin-top: 4px;">Tipo: Cromo individual (N° ${cromoAsociado} - ${nombreCromo})</div>
+                    <div style="color: #ffaa00; font-size: 11px; margin-top: 4px;">⚠️ El código es válido pero ya fue absorbido. Si el alumno dice que no le funcionó, te está mintiendo o lo usó otra persona.</div>
+                `;
+            } else {
+                cajaResultado.innerHTML = `
+                    <div style="color: #27ae60; font-weight: bold; font-size: 13px;">✅ CÓDIGO VÁLIDO Y LIBRE</div>
+                    <div style="color: #aaa; margin-top: 4px;">Tipo: Cromo individual (N° ${cromoAsociado} - ${nombreCromo})</div>
+                    <div style="color: #fff; font-size: 11px; margin-top: 4px;">Nadie lo ha usado todavía. Está listo para ser ingresado.</div>
+                `;
+            }
+            return;
+        }
+
+        fetch(fbDatabaseURL + "codigos_sobres/" + codVerificar + ".json")
+        .then(res => res.json())
+        .then(dataSobre => {
+            if(dataSobre) {
+                if(dataSobre.usado === true) {
+                    cajaResultado.innerHTML = `
+                        <div style="color: #ff3333; font-weight: bold; font-size: 13px;">❌ CÓDIGO DE SOBRE YA ABIERTO</div>
+                        <div style="color: #aaa; margin-top: 4px;">Tipo: Paquete de 3 Cromos Aleatorios</div>
+                        <div style="color: #ffaa00; font-size: 11px; margin-top: 4px;">⚠️ Este sobre ya fue reclamado y sus cromos fueron inyectados en un álbum. No puede usarse otra vez.</div>
+                    `;
+                } else {
+                    cajaResultado.innerHTML = `
+                        <div style="color: #27ae60; font-weight: bold; font-size: 13px;">✅ SOBRE PREMIUM DISPONIBLE</div>
+                        <div style="color: #aaa; margin-top: 4px;">Tipo: Paquete de 3 Cromos Aleatorios</div>
+                        <div style="color: #fff; font-size: 11px; margin-top: 4px;">Este código de sobre está activo en Firebase y listo para abrirse.</div>
+                    `;
+                }
+            } else {
+                cajaResultado.innerHTML = `
+                    <div style="color: #e74c3c; font-weight: bold; font-size: 13px;">🚫 CÓDIGO INEXISTENTE / FALSO</div>
+                    <div style="color: #aaa; margin-top: 4px;">Este código jamás fue generado por el sistema.</div>
+                    <div style="color: #ff3333; font-size: 11px; margin-top: 4px;">🛑 El alumno inventó el código o está mal escrito.</div>
+                `;
+            }
+        });
+    })
+    .catch(err => {
+        cajaResultado.innerHTML = "<span style='color: #ff3333;'>Error al auditar la base de datos de Firebase.</span>";
+    });
+  }
+
+  function generar50CodigosOrion() {
+    const listaTextArea = document.getElementById('lista-codigos-generados');
+    const btnCopiar = document.getElementById('btn-copiar-codigos');
+    const aviso = document.getElementById('aviso-copiado');
+    
+    aviso.style.display = 'none';
+    let codigos = [];
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let loteSobres = {};
+
+    for (let i = 0; i < 50; i++) {
+      let codigoAleatorio = '';
+      for (let j = 0; j < 5; j++) {
+        codigoAleatorio += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+      }
+      let nuevoCodigoSobre = 'ORION-SOBRE-' + codigoAleatorio;
+      codigos.push(nuevoCodigoSobre);
+      loteSobres[nuevoCodigoSobre] = { usado: false };
+    }
+    
+    fetch(fbDatabaseURL + "codigos_sobres.json", {
+      method: 'PATCH',
+      body: JSON.stringify(loteSobres)
+    })
+    .then(() => {
+        listaTextArea.value = codigos.join('\n');
+        listaTextArea.style.display = 'block';
+        btnCopiar.style.display = 'block';
+        alert("🧙‍♂️ ¡50 Sobres Premium generados e inyectados con éxito en la base de datos!");
+    })
+    .catch(err => { alert("❌ Error al conectar con Firebase: " + err); });
+  }
+
+  function copiarCodigosAlPortapapeles() {
+    const listaTextArea = document.getElementById('lista-codigos-generados');
+    const aviso = document.getElementById('aviso-copiado');
+    listaTextArea.select();
+    listaTextArea.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(listaTextArea.value).then(() => {
+      aviso.style.display = 'block';
+      setTimeout(() => { aviso.style.display = 'none'; }, 3000);
+    });
+  }
+
+  function escucharEventosYRealtime() {
+    setInterval(() => {
+       fetch(fbDatabaseURL + "evento_flash_activo.json").then(r=>r.json()).then(evt => {
+           const alertDiv = document.getElementById('alerta-evento-flash');
+           if(evt && evt.activo === true) {
+               alertDiv.style.display = 'block';
+               let restan = Math.max(0, Math.floor((evt.expira - Date.now()) / 1000));
+               let min = String(Math.floor(restan / 60)).padStart(2, '0');
+               let seg = String(restan % 60).padStart(2, '0');
+               document.getElementById('reloj-evento-flash').innerText = `${min}:${seg}`;
+           } else { alertDiv.style.display = 'none'; }
+       });
+       
+       fetch(fbDatabaseURL + "sorteo_activo.json").then(r=>r.json()).then(sorteo => {
+           const marq = document.getElementById('marquesina-sorteo');
+           if(sorteo && sorteo.activo === true) {
+               marq.style.display = 'block';
+               document.getElementById('ganador-sorteo-txt').innerText = sorteo.ganador || "Buscando...";
+           } else { marq.style.display = 'none'; }
+       });
+       actualizarConectados();
+       actualizarRankingGlobal();
+    }, 2000);
+  }
+
+  function actualizarConectados() {
+      fetch(fbDatabaseURL + "lista_alumnos_activos.json").then(r=>r.json()).then(data => {
+          document.getElementById('cant-conectados').innerText = data ? Object.keys(data).length : 0;
+      });
+  }
+  function actualizarRankingGlobal() {
+      fetch(fbDatabaseURL + "usuarios.json").then(r=>r.json()).then(data => {
+          if(!data) return;
+          let rank = [];
+          Object.keys(data).forEach(u => {
+              let count = Object.keys(data[u]).filter(k => data[u][k] === true).length;
+              rank.push({id: u, c: count});
+          });
+          rank.sort((a,b) => b.c - a.c);
+          let topHtml = rank.slice(0,3).map((u,i) => `<div>${i+1}º 🧙‍♂️ <b>${u.id}</b>: ${u.c} cromos</div>`).join("");
+          document.getElementById('lista-ranking-global').innerHTML = topHtml;
+      });
+  }
+
+  function dibujarEstructuraEspeciales126() {
+    const grid101 = document.getElementById('grid-especiales-101');
+    const gridVampiros = document.getElementById('grid-vampiros');
+    const gridArpias = document.getElementById('grid-arpias');
+    const gridGigantes = document.getElementById('grid-gigantes');
+    const gridDuendes = document.getElementById('grid-duendes');
+    const gridDragones = document.getElementById('grid-dragones');
+    
+    grid101.innerHTML = ""; gridVampiros.innerHTML = ""; gridArpias.innerHTML = "";
+    gridGigantes.innerHTML = ""; gridDuendes.innerHTML = ""; gridDragones.innerHTML = "";
+
+    Object.keys(infoCromos).forEach(id => {
+        const numId = parseInt(id);
+        const cardHtml = crearHtmlCardSlot(id, infoCromos[id]);
+        if (numId >= 102 && numId <= 106) gridVampiros.insertAdjacentHTML('beforeend', cardHtml);
+        else if (numId >= 107 && numId <= 111) gridArpias.insertAdjacentHTML('beforeend', cardHtml);
+        else if (numId >= 112 && numId <= 116) gridGigantes.insertAdjacentHTML('beforeend', cardHtml);
+        else if (numId >= 117 && numId <= 121) gridDuendes.insertAdjacentHTML('beforeend', cardHtml);
+        else if (numId >= 122 && numId <= 126) gridDragones.insertAdjacentHTML('beforeend', cardHtml);
+        else grid101.insertAdjacentHTML('beforeend', cardHtml);
+    });
+    rellenarSelectorAdmin();
+  }
+
+  function crearHtmlCardSlot(id, nombreMago) {
+    return `
+      <div id="slot-${id}" onclick="abrirZoom('${id}')" style="width:100%; max-width:160px; height:220px; background:rgba(255,255,255,0.4); border:2px dashed #a282a9; border-radius:12px; padding:8px; text-align:center; position:relative; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; transition: transform 0.2s; cursor:pointer;">
+        <div style="position:absolute; top:-5px; right:-5px; background:#a282a9; color:white; font-size:9px; font-weight:bold; padding:2px 5px; border-radius:8px;" id="badge-${id}">N° ${id}</div>
+        <div id="fig-shape-${id}" style="width:90px; height:110px; margin:15px auto 5px auto; background:#dcd1e0; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <span id="icon-${id}" style="font-size:20px; font-weight:bold; color:#8a6893;">?</span>
+        </div>
+        <div style="font-size:11px; font-weight:bold; color:#8a6893; line-height:1.2; height:32px; display:flex; align-items:center; justify-content:center;" id="name-${id}">${nombreMago}</div>
+        <button style="width:100%; font-size:9px; background:#2c0c2e; color:white; border:none; border-radius:3px; padding:3px; font-weight:bold;">📜 VER HISTORIA</button>
+      </div>
+    `;
+  }
+
+  function rellenarSelectorAdmin() {
+    const select = document.getElementById('select-cromo'); if(!select) return; select.innerHTML = "";
+    Object.keys(infoCromos).forEach(id => {
+        const opt = document.createElement('option'); opt.value = id; opt.innerText = `N° ${id} - ${infoCromos[id]}`; select.appendChild(opt);
+    });
+  }
+
+  function identificarAlumno() {
+    let input = document.getElementById('nombre-alumno-input').value.trim(); if(input === "") return;
+    miIdAlbum = input.replace(/[\.\#\$\[\]]/g, "_");
+    localStorage.setItem('orion_user_name_id', miIdAlbum);
+    mostrarInterfazAlumnoActivo();
+  }
+
+  function mostrarInterfazAlumnoActivo() {
+    document.getElementById('seccion-login-alumno').style.display = 'none';
+    document.getElementById('panel-alumno-activo').style.display = 'block';
+    document.getElementById('nombre-perfil-txt').innerText = miIdAlbum;
+    
+    fetch(fbDatabaseURL + "lista_alumnos_activos/" + miIdAlbum + ".json", { method: 'PUT', body: 'true' });
+    fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json").then(r=>r.json()).then(cant => {
+        esenciasMagicas = cant || 0;
+        document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
+    });
+    cargarProgresoDesdeNube();
+  }
+
+  function cerrarSesion() {
+    if(miIdAlbum) fetch(fbDatabaseURL + "lista_alumnos_activos/" + miIdAlbum + ".json", { method: 'DELETE' });
+    localStorage.removeItem('orion_user_name_id'); location.reload();
+  }
+
+  function cargarProgresoDesdeNube() {
+    pegadas = 0; cromosPegadosIds.clear(); cromosRepetidosCantidades = {};
+    Object.keys(infoCromos).forEach(id => aplicarEstiloVacio(id));
+    
+    fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + ".json").then(res => res.json()).then(guardados => {
+        if(guardados) {
+            Object.keys(guardados).forEach(id => { if(guardados[id] === true && infoCromos[id]) aplicarPegadoVisual(id, false); });
+        }
+        document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles;
+        cambiarFiltro('todo'); cargarRepetidasDesdeNube();
+    });
+  }
+
+  function cargarRepetidasDesdeNube() {
+    fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + ".json").then(res => res.json()).then(repData => {
+        const divRep = document.getElementById('contenedor-repetidas-alumno');
+        const txtRep = document.getElementById('lista-repetidas-txt');
+        cromosRepetidosCantidades = repData || {};
+        if(repData && Object.keys(repData).length > 0) {
+            let strings = [];
+            Object.keys(repData).forEach(id => { if(repData[id] > 0 && infoCromos[id]) strings.push(`N° ${id} (${repData[id]}x)`); });
+            if(strings.length > 0) { divRep.style.display = 'block'; stringGlobalRepetidas = strings.join(" | "); txtRep.innerText = stringGlobalRepetidas; return; }
+        }
+        divRep.style.display = 'none'; stringGlobalRepetidas = "";
+    });
+  }
+
+  function intentarAbrirJuegoDiario() {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    const llaveSeguridad = `orion_juego_criatura_${miIdAlbum}_${fechaHoy}`;
+    if(localStorage.getItem(llaveSeguridad)) {
+        alert("🧙‍♂️ Ya jugaste tu intento del día. ¡Regresá mañana para más esencias!"); return;
+    }
+    document.getElementById('btn-iniciar-juego-diario').style.display = 'none';
+    document.getElementById('juego-adivina').style.display = 'block';
+    iniciarJuegoAdivina(llaveSeguridad);
+  }
+
+  function iniciarJuegoAdivina(llaveSeguridad) {
+    juegoTerminadoEnTurno = false;
+    let keys = Object.keys(infoCromos);
+    juegoIncognitaId = keys[Math.floor(Math.random() * keys.length)];
+    document.getElementById('juego-id-incognita').innerText = juegoIncognitaId;
+    document.getElementById('feedback-juego').innerText = "";
+    
+    let opciones = [juegoIncognitaId];
+    while(opciones.length < 3) {
+        let rKey = keys[Math.floor(Math.random() * keys.length)];
+        if(!opciones.includes(rKey)) opciones.push(rKey);
+    }
+    opciones.sort(() => Math.random() - 0.5);
+    
+    const cont = document.getElementById('opciones-juego-adivina'); cont.innerHTML = "";
+    opciones.forEach(optId => {
+        cont.insertAdjacentHTML('beforeend', `<button id="btn-opt-${optId}" onclick="validarRespuestaAdivina('${optId}', '${llaveSeguridad}')" style="background:#4a154b; color:white; border:none; padding:5px 8px; font-size:11px; cursor:pointer; border-radius:4px; font-weight:bold; width:100%; text-align:left;">🔹 ${infoCromos[optId]}</button>`);
+    });
+
+    tiempoRestanteJuego = 15;
+    document.getElementById('reloj-cuenta-regresiva-juego').innerText = tiempoRestanteJuego + "s";
+    document.getElementById('reloj-cuenta-regresiva-juego').style.background = "#c0392b";
+    
+    if(temporizadorJuego) clearInterval(temporizadorJuego);
+    temporizadorJuego = setInterval(() => {
+        tiempoRestanteJuego--;
+        document.getElementById('reloj-cuenta-regresiva-juego').innerText = tiempoRestanteJuego + "s";
+        if(tiempoRestanteJuego <= 5) document.getElementById('reloj-cuenta-regresiva-juego').style.background = "#ff3333";
+        if(tiempoRestanteJuego <= 0) { clearInterval(temporizadorJuego); finalizarJuegoPorTiempo(llaveSeguridad); }
+    }, 1000);
+  }
+
+  function validarRespuestaAdivina(elegido, llaveSeguridad) {
+    if(juegoTerminadoEnTurno) return;
+    juegoTerminadoEnTurno = true; clearInterval(temporizadorJuego);
+    localStorage.setItem(llaveSeguridad, "jugado"); deshabilitarOpcionesJuego();
+
+    if(elegido === juegoIncognitaId) {
+        esenciasMagicas += 5; document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
+        fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(esenciasMagicas) });
+        document.getElementById('feedback-juego').innerHTML = "<span style='color:green; font-weight:bold;'>✨ ¡Excelente! Respuesta correcta. Ganaste +5 Esencias Mágicas.</span>";
+    } else {
+        document.getElementById('feedback-juego').innerHTML = `<span style='color:red; font-weight:bold;'>❌ Incorrecto. La criatura correcta era: N° ${juegoIncognitaId} (${infoCromos[juegoIncognitaId]}).</span>`;
+    }
+  }
+
+  function finalizarJuegoPorTiempo(llaveSeguridad) {
+    if(juegoTerminadoEnTurno) return;
+    juegoTerminadoEnTurno = true; localStorage.setItem(llaveSeguridad, "jugado"); deshabilitarOpcionesJuego();
+    document.getElementById('feedback-juego').innerHTML = `<span style='color:red; font-weight:bold;'>⏳ ¡Tiempo agotado! Perdiste el intento de hoy. Era: N° ${juegoIncognitaId} (${infoCromos[juegoIncognitaId]}).</span>`;
+  }
+
+  function deshabilitarOpcionesJuego() {
+    Object.keys(infoCromos).forEach(id => {
+        let btn = document.getElementById(`btn-opt-${id}`);
+        if(btn) { btn.disabled = true; btn.style.opacity = "0.5"; btn.style.cursor = "not-allowed"; }
+    });
+  }
+
+  function transmutarRepetidasPorSobre() {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    const llaveCaldero = `orion_caldero_reciclaje_${miIdAlbum}_${fechaHoy}`;
+    if(localStorage.getItem(llaveCaldero)) { alert("🧪 El caldero está apagado. Ya realizaste tu transmutación diaria."); return; }
+
+    let totalRepetidasDisponibles = 0;
+    Object.keys(cromosRepetidosCantidades).forEach(id => { if(cromosRepetidosCantidades[id] > 0) totalRepetidasDisponibles += cromosRepetidosCantidades[id]; });
+    if(totalRepetidasDisponibles < 3) { alert("Necesitás al menos 3 cromos repetidos."); return; }
+    
+    let restados = 0;
+    Object.keys(cromosRepetidosCantidades).forEach(id => {
+        while(cromosRepetidosCantidades[id] > 0 && restados < 3) {
+            cromosRepetidosCantidades[id]--; restados++;
+            fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: JSON.stringify(cromosRepetidosCantidades[id]) });
+        }
+    });
+    localStorage.setItem(llaveCaldero, "utilizado");
+    alert("🧪 Las 3 repetidas se disolvieron..."); procesarDificultadSobre();
+  }
+
+  function comprarSobreConEsencia() {
+    if(esenciasMagicas < 50) { alert("Necesitás 50 Esencias Mágicas."); return; }
+    esenciasMagicas -= 50; document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
+    fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(esenciasMagicas) });
+    procesarDificultadSobre();
+  }
+
+  function reclamarPremioFlash() {
+     fetch(fbDatabaseURL + "evento_flash_activo.json").then(r=>r.json()).then(evt => {
+         if(!evt || evt.activo !== true) { alert("El evento ya terminó."); return; }
+         fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/reclamos_flash/" + evt.expira + ".json").then(r=>r.json()).then(yaReclamo => {
+             if(yaReclamo) { alert("Ya reclamaste este cofre."); return; }
+             fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/reclamos_flash/" + evt.expira + ".json", { method: 'PUT', body: 'true' });
+             alert("🎁 ¡Cofre Flash Abierto!"); procesarDificultadSobre();
+         });
+     });
+  }
+
+  function canjearCodigoSobreOnline() {
+    let cod = document.getElementById('codigo-sobre-input').value.trim().toUpperCase(); if(cod === "") return;
+    fetch(fbDatabaseURL + "codigos_sobres/" + cod + ".json").then(res => res.json()).then(data => {
+        if(!data || data.usado === true) { alert("Código inválido o usado."); playSound('error'); return; }
+        fetch(fbDatabaseURL + "codigos_sobres/" + cod + "/usado.json", { method: 'PUT', body: 'true' }).then(() => {
+            document.getElementById('codigo-sobre-input').value = ""; 
+            playSound('sobre');
+            procesarDificultadSobre();
+        });
+    });
+  }
+
+  function procesarDificultadSobre() {
+    let elegidos = []; let antiRepetidasTriggered = false;
+    let todasLasKeys = Object.keys(infoCromos).filter(k => parseInt(k) <= 126);
+
+    for(let i=0; i<3; i++) {
+        let finalId = "1"; let safety = 0; let asignado = false;
+        while(!asignado && safety < 15) {
+            safety++;
+            let esLegendario = Math.random() < 0.015;
+            let esEpico = Math.random() < 0.12;
+            if(esLegendario) finalId = Math.random() < 0.5 ? "100" : "101";
+            else if(esEpico) finalId = String(Math.floor(Math.random() * (126 - 102 + 1)) + 102);
+            else finalId = todasLasKeys[Math.floor(Math.random() * todasLasKeys.length)];
+
+            if(cromosPegadosIds.has(finalId) && (cromosRepetidosCantidades[finalId] || 0) >= 3) { antiRepetidasTriggered = true; }
+            else { asignado = true; }
+        }
+        elegidos.push(finalId);
+    }
+
+    let promesas = elegidos.map(id => {
+        if(id > 100) playSound('raro');
+        if(cromosPegadosIds.has(id)) {
+            let n = (cromosRepetidosCantidades[id] || 0) + 1; cromosRepetidosCantidades[id] = n;
+            return fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: JSON.stringify(n) });
+        } else {
+            cromosPegadosIds.add(id); return fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: 'true' });
+        }
+    });
+
+    Promise.all(promesas).then(() => {
+        elegidos.forEach(id => {
+            if(cromosPegadosIds.has(id)) {
+                let slot = document.getElementById('slot-' + id);
+                if(slot) {
+                    let src = linksPostimagesFijos[id] || imagenesBaseDatos[id] || "";
+                    if(src) document.getElementById('icon-' + id).innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit: cover; display:block;">`;
+                    slot.style.border = "2px solid #ffcc00"; slot.style.background = "#fff8e7";
+                }
+            } else { aplicarPegadoVisual(id, false); }
+        });
+        pegadas = cromosPegadosIds.size; document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles;
+        const resDiv = document.getElementById('resultado-sobre'); resDiv.style.display = 'block';
+        let aviso = antiRepetidasTriggered ? `<br><span style="color:#58d68d;">✨ ¡Se aplicó magia anti-repetidas!</span>` : "";
+        resDiv.innerHTML = `🎉 ¡SOBRE ABIERTO!<br><span style="color:#ffcc00;">${elegidos.map(id=>`N° ${id} (${infoCromos[id]})`).join(" | ")}</span>${aviso}`;
+        cargarRepetidasDesdeNube(); cambiarFiltro(filtroActual);
+    });
+  }
+
+  function canjearCodigoOnline() {
+    let cod = document.getElementById('codigo-alumno').value.trim().toUpperCase(); if(cod === "") return;
+    fetch(fbDatabaseURL + "codigos/" + cod + ".json").then(res => res.json()).then(data => {
+        if(!data || data.usado === true) { alert("Código inválido o usado."); playSound('error'); return; }
+        let cid = data.cromo_id;
+        if(cromosPegadosIds.has(cid) && (cromosRepetidosCantidades[cid] || 0) >= 3) {
+            let keys = Object.keys(infoCromos).filter(k => parseInt(k) <= 126);
+            for(let k=0; k<30; k++) {
+                let az = keys[Math.floor(Math.random() * keys.length)];
+                if(!cromosPegadosIds.has(az) || (cromosRepetidosCantidades[az] || 0) < 3) { cid = az; break; }
+            }
+        }
+        fetch(fbDatabaseURL + "codigos/" + cod + "/usado.json", { method: 'PUT', body: 'true' }).then(() => {
+            document.getElementById('codigo-alumno').value = "";
+            playSound('canje');
+            if(cromosPegadosIds.has(cid)) {
+                let n = (cromosRepetidosCantidades[cid] || 0) + 1; cromosRepetidosCantidades[cid] = n;
+                fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + cid + ".json", { method: 'PUT', body: JSON.stringify(n) }).then(() => {
+                    alert(`📦 Repetida canjeada: N° ${cid}`); cargarRepetidasDesdeNube();
+                });
+            } else {
+                fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/" + cid + ".json", { method: 'PUT', body: 'true' }).then(() => {
+                    aplicarPegadoVisual(cid, true); cambiarFiltro(filtroActual);
+                });
+            }
+        });
+    });
+  }
+
+  function copiarRepetidasAlPortapapeles() {
+    if(stringGlobalRepetidas === "") return;
+    navigator.clipboard.writeText(`Mis repetidas en Hogwarts Orión: ${stringGlobalRepetidas}`).then(() => alert("📋 Copiado al portapapeles."));
+  }
+
+  function cambiarFiltro(nuevoFiltro) {
+    filtroActual = nuevoFiltro;
+    const todosBotones = document.querySelectorAll('#panel-alumno-activo button');
+    todosBotones.forEach(b => { if(b.id.startsWith('filtro-')) { b.style.background = "#eadaf2"; b.style.color = "#4a154b"; } });
+    
+    const btnActivo = document.getElementById('filtro-' + nuevoFiltro);
+    if(btnActivo) { btnActivo.style.background = "#4a154b"; btnActivo.style.color = "white"; }
+    
+    fetch(fbDatabaseURL + "cromos_extra.json").then(r=>r.json()).then(dataExtra => {
+        Object.keys(infoCromos).forEach(id => {
+            const slot = document.getElementById('slot-' + id); if(!slot) return;
+            let mostrar = false;
+            
+            if(filtroActual === "todo") mostrar = true;
+            else if(filtroActual === "pegados") mostrar = cromosPegadosIds.has(id);
+            else if(filtroActual === "faltantes") mostrar = !cromosPegadosIds.has(id);
+            else {
+                let secCromo = (dataExtra && dataExtra[id]) ? dataExtra[id].seccion.toLowerCase() : "especiales";
+                if(secCromo === filtroActual) mostrar = true;
+            }
+            slot.style.display = mostrar ? "flex" : "none";
+        });
+    });
+  }
+
+  function aplicarEstiloVacio(id) {
+    const slot = document.getElementById('slot-' + id); if(!slot) return;
+    slot.style.border = "2px dashed #a282a9"; slot.style.background = "rgba(255,255,255,0.4)";
+    document.getElementById('icon-' + id).innerHTML = "?";
+  }
+
+  function aplicarPegadoVisual(id, alertar) {
+    const slot = document.getElementById('slot-' + id); if(!slot) return;
+    cromosPegadosIds.add(id); slot.style.border = "2px solid #ffcc00"; slot.style.background = "#fff8e7";
+    let src = linksPostimagesFijos[id] || imagenesBaseDatos[id] || "";
+    if(src) document.getElementById('icon-' + id).innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit: cover; display:block;">`;
+    else document.getElementById('icon-' + id).innerHTML = "🔓";
+    pegadas = cromosPegadosIds.size; document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles;
+    if(alertar) alert(`🌟 ¡Excelente! Pegaste: N° ${id} (${infoCromos[id]})`);
+  }
+
+  function cerrarModal() { document.getElementById('modal-zoom').style.display = 'none'; }
+  function abrirZoom(id) {
+      if(!cromosPegadosIds.has(id)) { alert("Debes conseguir este cromo para leer su historia."); return; }
+      const modal = document.getElementById('modal-zoom');
+      const imgCont = document.getElementById('modal-content-img');
+      const nombreTxt = document.getElementById('modal-nombre');
+      const historiaTxt = document.getElementById('modal-historia');
+      
+      modal.style.display = 'flex';
+      nombreTxt.innerText = infoCromos[id];
+      let src = linksPostimagesFijos[id] || imagenesBaseDatos[id] || "";
+      imgCont.innerHTML = `<img src="${src}" style="max-width:90%; max-height:90%; border:3px solid #ffcc00; box-shadow:0 0 15px #000;">`;
+      
+      fetch(fbDatabaseURL + "cromos_extra/" + id + ".json").then(r=>r.json()).then(data => {
+          let seccion = data ? data.seccion : "Colección Histórica";
+          historiaTxt.innerText = generarHistoriaProcedural(infoCromos[id], seccion, id);
+      });
+  }
+
+  function generarHistoriaProcedural(nombre, seccion, id) {
+      const intro = [
+          `En los anales olvidados de la magia, la figura de ${nombre} resuena con una fuerza inusitada.`,
+          `Pocos saben que ${nombre} comenzó su viaje en los pasillos de ${seccion}, donde su destino se selló para siempre.`,
+          `La leyenda de ${nombre} es una que los profesores solo susurran en las noches de tormenta.`,
+          `Desde su ingreso a ${seccion}, quedó claro que ${nombre} no era un mago común.`
+      ];
+      const nudo = [
+          `Se dice que protagonizó un duelo legendario en el Bosque Prohibido, donde descubrió un secreto oculto por siglos.`,
+          `Su rivalidad con un antiguo director llevó a ${nombre} a desarrollar un hechizo capaz de alterar la realidad misma.`,
+          `Durante años, buscó los fragmentos de un artefacto perdido, enfrentándose a criaturas que la mayoría cree extintas.`,
+          `Su paso por Hogwarts estuvo marcado por constantes misterios y una lealtad inquebrantable hacia sus principios.`
+      ];
+      const final = [
+          `Hoy, su cromo es un recordatorio de que en ${seccion}, la grandeza espera a quienes se atreven a soñar.`,
+          `Su legado perdura en cada rincón del castillo, inspirando a nuevas generaciones de alumnos.`,
+          `Aunque su paradero actual es desconocido, se dice que su magia aún protege los cimientos de la escuela.`,
+          `La historia de ${nombre} terminó en un descubrimiento que cambió la forma en que entendemos la magia elemental.`
+      ];
+
+      if(seccion === "Azkaban") {
+          return `EXPEDIENTE OSCURO Nº ${id}: ${nombre}. Fue arrestado tras los incidentes en la Torre de Astronomía. Se le acusa de practicar artes prohibidas frente a alumnos de primer año y de intentar sabotear la Red Flú del castillo. Su caída fue estrepitosa; tras un duelo contra tres Aurores, fue reducido y enviado a las celdas de Azkaban sin posibilidad de fianza. Se dice que antes de su captura, ${nombre} escondió un objeto de gran poder en los sótanos de la escuela que aún no ha sido hallado.`;
+      }
+
+      const r = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      return `${r(intro)} ${r(nudo)} ${r(final)}`;
+  }
+
+  function verificarAdmin() {
+    if(document.getElementById('admin-pass').value === "orion2026") {
+        document.getElementById('admin-controls').style.display = 'block';
+        document.getElementById('admin-login').style.display = 'none';
+    } else { alert("Clave incorrecta."); }
+  }
+
+  function activarEventoFlashOnline(minutos) {
+    let expira = Date.now() + (minutos * 60 * 1000);
+    fetch(fbDatabaseURL + "evento_flash_activo.json", { method: 'PUT', body: JSON.stringify({ activo: true, expira: expira }) })
+    .then(() => alert(`⏱️ Evento Relámpago de ${minutos} minutos activado.`));
+  }
+
+  function desactivarEventoFlashOnline() {
+    fetch(fbDatabaseURL + "evento_flash_activo.json", { method: 'PUT', body: JSON.stringify({ activo: false, expira: 0 }) })
+    .then(() => alert("Evento Flash apagado."));
+  }
+
+  function lanzarSorteoComunitario() {
+    fetch(fbDatabaseURL + "lista_alumnos_activos.json").then(r=>r.json()).then(alumnos => {
+        if(!alumnos) { alert("No hay alumnos activos para sortear."); return; }
+        let keys = Object.keys(alumnos);
+        let ganador = keys[Math.floor(Math.random() * keys.length)];
+        
+        fetch(fbDatabaseURL + "sorteo_activo.json", { method: 'PUT', body: JSON.stringify({ activo: true, ganador: ganador }) });
+        
+        let codSobre = "SORTEO-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+        fetch(fbDatabaseURL + "codigos_sobres/" + codSobre + ".json", { method: 'PUT', body: JSON.stringify({ usado: false }) }).then(() => {
+             alert(`🎰 Sorteo ejecutado. Ganador: ${ganador}.`);
+             setTimeout(() => {
+                 fetch(fbDatabaseURL + "sorteo_activo.json", { method: 'PUT', body: JSON.stringify({ activo: false, ganador: "" }) });
+             }, 8000);
+        });
+    });
+  }
+
+  function generarCodigoFinal(idCromo) {
+    let codigo = "ORION-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+    fetch(fbDatabaseURL + "codigos/" + codigo + ".json", { method: 'PUT', body: JSON.stringify({ cromo_id: idCromo, usado: false }) }).then(() => {
+        document.getElementById('contenedor-resultado').style.display = 'block';
+        document.getElementById('codigo-generado-txt').innerText = codigo;
+        historialCodigosSesion.unshift(`${codigo} -> N° ${idCromo}`);
+        if(historialCodigosSesion.length > 3) historialCodigosSesion.pop();
+        document.getElementById('historial-codigos-director').innerText = historialCodigosSesion.join("\n");
+    });
+  }
+
+  function crearCodigoSobreEnFirebase() {
+    let codigoSobre = "ORION-SOBRE-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+    fetch(fbDatabaseURL + "codigos_sobres/" + codigoSobre + ".json", { method: 'PUT', body: JSON.stringify({ usado: false }) }).then(() => {
+        document.getElementById('contenedor-resultado').style.display = 'block';
+        document.getElementById('codigo-generado-txt').innerText = codigoSobre;
+        historialCodigosSesion.unshift(`${codigoSobre} -> [Sobre]`);
+        if(historialCodigosSesion.length > 3) historialCodigosSesion.pop();
+        document.getElementById('historial-codigos-director').innerText = historialCodigosSesion.join("\n");
+    });
+  }
+
+  function crearCodigoEnFirebase() { generarCodigoFinal(document.getElementById('select-cromo').value); }
+  function crearCodigoAleatorioEnFirebase() { 
+      let k = Object.keys(infoCromos).filter(n => parseInt(n) <= 126); 
+      generarCodigoFinal(k[Math.floor(Math.random() * k.length)]); 
+  }
+
+  function crearNuevoCromoColeccion() {
+    let nombre = document.getElementById('nuevo-cromo-nombre').value.trim();
+    let url = document.getElementById('nuevo-cromo-imagen').value.trim();
+    let seccion = document.getElementById('nuevo-cromo-seccion').value;
+    if(!nombre) return;
+    
+    fetch(fbDatabaseURL + "cromos_extra.json").then(res => res.json()).then(data => {
+        let nuevoId = 200;
+        if(data) {
+            let numKeys = Object.keys(data).map(k => parseInt(k)).filter(n => !isNaN(n));
+            if(numKeys.length > 0) { let max = Math.max(...numKeys); nuevoId = max < 200 ? 200 : max + 1; }
+        }
+        fetch(fbDatabaseURL + "cromos_extra/" + nuevoId + ".json", { method: 'PUT', body: JSON.stringify({ nombre: nombre, url: url, seccion: seccion }) }).then(() => {
+            alert(`✅ Cromo creado con ID: N° ${nuevoId}`); location.reload();
+        });
+    });
+  }
+
+  function cargarCromosDinamicosDesdeNube() {
+    fetch(fbDatabaseURL + "cromos_extra.json").then(res => res.json()).then(data => {
+        if(data) {
+            Object.keys(data).forEach(id => {
+                if(!infoCromos[id]) {
+                    infoCromos[id] = data[id].nombre; imagenesBaseDatos[id] = data[id].url;
+                    if(!document.getElementById('slot-' + id)) {
+                        const htmlSlot = crearHtmlCardSlot(id, data[id].nombre);
+                        const casaGrid = document.getElementById('grid-casa-' + data[id].seccion.toLowerCase());
+                        if(casaGrid) { removerTextoVacio('grid-casa-' + data[id].seccion.toLowerCase()); casaGrid.insertAdjacentHTML('beforeend', htmlSlot); }
+                        else { document.getElementById('grid-especiales-101').insertAdjacentHTML('beforeend', htmlSlot); }
+                    }
+                }
+            });
+            totalVisibles = Object.keys(infoCromos).length;
+            document.getElementById('progreso-texto').innerText = pegadas + " / " + totalVisibles; rellenarSelectorAdmin();
+            cambiarFiltro(filtroActual);
+        }
+    });
+  }
+
+  function removerTextoVacio(gridId) { const c = document.getElementById(gridId); if(c) { const t = c.querySelector('.txt-vacio'); if(t) t.style.display = 'none'; } }
+</script>
+
+<style>
+  @keyframes pulse {
+    0% { opacity: 0.9; }
+    50% { opacity: 1; transform: scale(1.01); }
+    100% { opacity: 0.9; }
+  }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #f1f1f1; }
+  ::-webkit-scrollbar-thumb { background: #4a154b; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2c0c2e; }
+</style>
+</body>
+</html>
