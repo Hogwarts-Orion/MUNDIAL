@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álbum Digital Hogwarts Orión</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <style>
+        @keyframes pulse { 0% { opacity: 0.9; } 50% { opacity: 1; transform: scale(1.01); } 100% { opacity: 0.9; } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #4a154b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2c0c2e; }
+        @media (max-width: 600px) {
+            #grid-especiales-101, #grid-vampiros, #grid-arpias, #grid-gigantes, 
+            #grid-duendes, #grid-dragones, [id^="grid-casa-"], #grid-horrocruxes, #grid-reliquias {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .album-container { width: 95% !important; padding: 10px !important; }
+        }
+    </style>
+</head>
+<body style="background-color: #1e122b; margin: 0; padding: 20px; font-family: 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center;">
+
+<div class="album-container" style="width: 100%; max-width: 650px; background-color: #f3ebf7; background-image: radial-gradient(#e1cee9 1px, transparent 1px); background-size: 20px 20px; border: 4px solid #4a154b; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 24px rgba(0,0,0,0.5); box-sizing: border-box;">
+  
+  <div style="background: linear-gradient(135deg, #4a154b, #2c0c2e); padding: 20px; color: white; text-align: center; border-bottom: 4px solid #ffcc00; position: relative;">
+    <span style="font-size: 10px; font-weight: bold; letter-spacing: 4px; display: block; margin-bottom: 5px; color: #ffcc00;">COLECCIÓN VIRTUAL INTERACTIVA</span>
+    <b style="font-size: 26px; display: block; font-style: italic; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">HOGWARTS ORIÓN</b>
+    <div style="background-color: rgba(255, 204, 0, 0.2); border: 1px solid #ffcc00; border-radius: 20px; padding: 4px 15px; display: inline-block; margin-top: 10px; font-size: 11px; font-weight: bold; color: #ffcc00;">👤 REGISTRO PERMANENTE EN LA NUBE</div>
+    <div id="panel-conectados" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 10px; font-size: 9px; border: 1px solid #ffcc00;">🟢 <span id="cant-conectados">0</span> Online</div>
+  </div>
+
+  <div id="alerta-evento-flash" style="display: none; background: linear-gradient(90deg, #d35400, #c0392b); color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; border-bottom: 3px solid #ffcc00; animation: pulse 1.5s infinite;">
+    🚨 ¡EVENTO RELÁMPAGO ACTIVO! Quedan: <span id="reloj-evento-flash" style="font-family: monospace; font-size: 16px; color: #ffcc00;">00:00</span>
+    <button onclick="reclamarPremioFlash()" style="margin-left: 10px; background: #ffcc00; color: #2c0c2e; border: none; padding: 3px 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;">Reclamar Regalo 🎁</button>
+  </div>
+
+  <div id="marquesina-sorteo" style="display: none; background: #27ae60; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; border-bottom: 2px solid #fff;">
+    🎉 ¡ATENCIÓN! El Director inició un sorteo... Ganador: <b id="ganador-sorteo-txt" style="color: #ffcc00;">Buscando...</b> 🏆
+  </div>
+
+  <div id="seccion-login-alumno" style="padding: 20px; background-color: white; text-align: center; border-bottom: 1px solid #d4bee0;">
+    <div style="font-size: 14px; font-weight: bold; color: #4a154b; margin-bottom: 5px;">👋 ¡BIENVENIDO AL ÁLBUM!</div>
+    <div style="display: flex; gap: 8px; max-width: 400px; margin: 0 auto;">
+      <input type="text" id="nombre-alumno-input" placeholder="Tu Apodo..." style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #a282a9;">
+      <button onclick="identificarAlumno()" style="background: #2c0c2e; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">Ingresar</button>
+    </div>
+  </div>
+
+  <div id="panel-alumno-activo" style="display: none; padding: 15px 20px; background-color: rgba(255,255,255,0.9); border-bottom: 1px solid #d4bee0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #eadaf2; padding: 6px 12px; border-radius: 6px; font-size: 12px;">
+      <span>🧙‍♂️ Alumno: <b id="nombre-perfil-txt" style="color: #4a154b;">-</b></span>
+      <span>✨ Esencia: <b id="polvo-esencia-txt" style="color: #e67e22;">0</b> 🔸</span>
+      <button onclick="cerrarSesion()" style="background: none; border: none; color: #ff3333; cursor: pointer; font-size: 11px; text-decoration: underline;">Salir</button>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+      <div style="background: #fff; border: 1px solid #d4bee0; border-radius: 8px; padding: 10px;">
+        <div style="font-size: 10px; font-weight: bold; color: #4a154b;">🎫 FIGURITA INDIVIDUAL:</div>
+        <input type="text" id="codigo-alumno" placeholder="Código..." style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #a282a9; margin: 5px 0; text-transform: uppercase;">
+        <button onclick="canjearCodigoOnline()" style="width: 100%; background: #4a154b; color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold;">Canjear</button>
+      </div>
+      <div style="background: linear-gradient(135deg, #e67e22, #d35400); border-radius: 8px; padding: 10px; color: white;">
+        <div style="font-size: 10px; font-weight: bold;">🛍️ SOBRE DIARIO:</div>
+        <input type="text" id="codigo-sobre-input" placeholder="Código sobre..." style="width: 100%; padding: 6px; border-radius: 4px; border: none; margin: 5px 0; text-transform: uppercase;">
+        <button onclick="canjearCodigoSobreOnline()" style="width: 100%; background: #fff; color: #d35400; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold;">Abrir Sobre ✨</button>
+      </div>
+    </div>
+    <div id="resultado-sobre" style="margin-bottom: 10px; font-size: 11px; font-weight: bold; background: #222; color: #ffcc00; padding: 8px; border-radius: 6px; display: none; text-align: center;"></div>
+
+    <div style="background: #fff; border: 1px solid #27ae60; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+        <div style="font-size: 11px; font-weight: bold; color: #27ae60; text-align: center;">🤝 INTERCAMBIO MÁGICO (Máx 3/día)</div>
+        <div style="display: flex; gap: 5px; margin-top: 5px;">
+            <input type="text" id="intercambio-destinatario" placeholder="Alumno..." style="flex: 1; padding: 5px; font-size: 11px;">
+            <input type="text" id="intercambio-cromo-id" placeholder="ID..." style="width: 40px; padding: 5px; font-size: 11px;">
+            <button onclick="proponerIntercambio()" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer;">Dar</button>
+        </div>
+        <div id="info-intercambios-restantes" style="font-size: 9px; color: #666; margin-top: 4px; text-align: center;">Intercambios hoy: 0 / 3</div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #111, #2c0c2e); border: 2px solid #ffcc00; border-radius: 8px; padding: 10px; color: white; margin-bottom: 10px;">
+      <div style="font-size: 12px; font-weight: bold; color: #ffcc00; text-align: center; margin-bottom: 6px;">🧪 EL CALDERO CHORREANTE</div>
+      <button onclick="transmutarRepetidasPorSobre()" style="width: 100%; background: rgba(255,255,255,0.1); border: 1px solid #ffcc00; color: white; padding: 6px; font-size: 10px; cursor: pointer;">♻️ Reciclar 3 Repetidas (Cada 6 Horas)</button>
+    </div>
+
+    <div style="background: #fff; border: 1px solid #a282a9; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+      <div style="font-size: 12px; font-weight: bold; color: #4a154b; text-align: center;">🔮 MINIJUEGO DIARIO</div>
+      <button id="btn-iniciar-juego-diario" onclick="intentarAbrirJuegoDiario()" style="display: block; margin: 5px auto; background: #2c0c2e; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">JUGAR INTENTO DIARIO</button>
+      <div id="juego-adivina" style="display: none; background: #f3ebf7; padding: 10px; text-align: center; position: relative;">
+        <div id="reloj-cuenta-regresiva-juego" style="position: absolute; top: 5px; right: 8px; background: #c0392b; color: white; padding: 2px 6px; border-radius: 4px;">15s</div>
+        <div style="font-size: 12px; margin-bottom: 8px;">¿Qué cromo es el <span id="juego-id-incognita" style="font-weight: bold;">?</span>?</div>
+        <div id="opciones-juego-adivina"></div>
+        <div id="feedback-juego" style="font-size: 11px; font-weight: bold; margin-top: 4px;"></div>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; color: #555; text-align: center; font-weight: bold; margin-bottom: 8px;">Progreso: <span id="progreso-texto" style="color: #4a154b;">0 / 126</span></div>
+    <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin-bottom: 5px;">
+      <button id="filtro-todo" onclick="cambiarFiltro('todo')" style="background: #4a154b; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">Todo</button>
+      <button id="filtro-pegados" onclick="cambiarFiltro('pegados')" style="background: #eadaf2; color: #4a154b; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">Pegados</button>
+      <button id="filtro-faltantes" onclick="cambiarFiltro('faltantes')" style="background: #eadaf2; color: #4a154b; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">Faltantes</button>
+      <div id="filtros-secciones-dinamicas" style="display: flex; gap: 5px; flex-wrap: wrap;"></div>
+    </div>
+  </div>
+
+  <!-- SECCIONES DE GRIDS -->
+  <div id="wrapper-especiales">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background-color: #4a154b; text-align: center;">⭐ CROMOS ESPECIALES HISTÓRICOS</div>
+    <div id="grid-especiales-101" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div>
+  </div>
+
+  <div id="wrapper-horrocruxes">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background: linear-gradient(90deg, #1a0f00, #4d0000); text-align: center; border-top: 2px solid #ffcc00;">🖤 LOS HORROCRUXES DE VOLDEMORT</div>
+    <div id="grid-horrocruxes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div>
+  </div>
+
+  <div id="wrapper-reliquias">
+    <div style="padding: 12px 20px; font-size: 13px; font-weight: bold; color: white; background: linear-gradient(90deg, #001a33, #003366); text-align: center; border-top: 2px solid #ffcc00;">⚡ LAS RELIQUIAS DE LA MUERTE</div>
+    <div id="grid-reliquias" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div>
+  </div>
+
+  <div id="wrapper-vampiros"><div style="padding: 12px 20px; color: white; background-color: #311b92; text-align: center; border-top: 2px solid #ffcc00;">🧛‍♂️ VAMPIROS FAMOSOS</div><div id="grid-vampiros" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div></div>
+  <div id="wrapper-arpias"><div style="padding: 12px 20px; color: white; background-color: #ad1457; text-align: center; border-top: 2px solid #ffcc00;">🦅 ARPÍAS FAMOSAS</div><div id="grid-arpias" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div></div>
+  <div id="wrapper-gigantes"><div style="padding: 12px 20px; color: white; background-color: #e65100; text-align: center; border-top: 2px solid #ffcc00;">👹 GIGANTES FAMOSOS</div><div id="grid-gigantes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div></div>
+  <div id="wrapper-duendes"><div style="padding: 12px 20px; color: white; background-color: #004d40; text-align: center; border-top: 2px solid #ffcc00;">Duendes Famosos</div><div id="grid-duendes" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div></div>
+  <div id="wrapper-dragones"><div style="padding: 12px 20px; color: white; background-color: #b71c1c; text-align: center; border-top: 2px solid #ffcc00;">🐉 DRAGONES FAMOSOS</div><div id="grid-dragones" style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"></div></div>
+
+  <div style="padding: 12px 20px; font-size: 14px; font-weight: bold; color: #ffcc00; background-color: #2c0c2e; text-align: center; border-top: 4px solid #ffcc00;">🏰 ALUMNOS DE HOGWARTS ORIÓN</div>
+  <div id="wrapper-gryffindor"><div style="padding: 8px 20px; color: white; background-color: #7f0909;">🦁 CASA GRYFFINDOR</div><div id="grid-casa-gryffindor" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos.</p></div></div>
+  <div id="wrapper-slytherin"><div style="padding: 8px 20px; color: white; background-color: #0d6217;">🐍 CASA SLYTHERIN</div><div id="grid-casa-slytherin" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos.</p></div></div>
+  <div id="wrapper-hufflepuff"><div style="padding: 8px 20px; color: #111; background-color: #ffcc00;">🦡 CASA HUFFLEPUFF</div><div id="grid-casa-hufflepuff" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #666; text-align: center;">No hay alumnos.</p></div></div>
+  <div id="wrapper-ravenclaw"><div style="padding: 8px 20px; color: white; background-color: #003366;">🦅 CASA RAVENCLAW</div><div id="grid-casa-ravenclaw" style="padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;"><p class="txt-vacio" style="grid-column: span 3; font-size: 11px; color: #888; text-align: center;">No hay alumnos.</p></div></div>
+  <div id="contenedor-secciones-dinamicas"></div>
+  <div style="background-color: #4a154b; padding: 12px; color: #ffcc00; font-weight: bold; font-size: 11px; text-align: center; border-top: 3px solid #ffcc00;">🏰 HOGWARTS ORIÓN © 2026</div>
+</div>
+
+<!-- MODAL ZOOM + LORE -->
+<div id="modal-zoom" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+    <div style="position:relative; max-width:450px; width:100%; background:#f3ebf7; border:4px solid #ffcc00; border-radius:15px; overflow:hidden;">
+        <button onclick="cerrarModal()" style="position:absolute; top:10px; right:10px; background:#ff3333; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; z-index:10;">X</button>
+        <div id="modal-content-img" style="width:100%; height:250px; background:#2c0c2e; display:flex; align-items:center; justify-content:center;"></div>
+        <div style="padding:15px; max-height:400px; overflow-y:auto;">
+            <b id="modal-nombre" style="font-size:18px; color:#4a154b; display:block; text-align:center; margin-bottom:10px;">Nombre</b>
+            <div style="display: flex; gap: 5px; margin-bottom: 10px; border-bottom: 2px solid #d4bee0; padding-bottom: 5px; overflow-x: auto;">
+                <button onclick="switchTab('historia')" class="tab-btn active" style="font-size: 10px; padding: 5px; background:#4a154b; color:white; border-radius:4px; border:none;">📖 Historia</button>
+                <button onclick="switchTab('expediente')" class="tab-btn" style="font-size: 10px; padding: 5px; background:#eadaf2; color:#4a154b; border-radius:4px; border:none;">📁 Expediente</button>
+                <button onclick="switchTab('cartas')" class="tab-btn" style="font-size: 10px; padding: 5px; background:#eadaf2; color:#4a154b; border-radius:4px; border:none;">🦉 Cartas</button>
+                <button onclick="switchTab('recuerdos')" class="tab-btn" style="font-size: 10px; padding: 5px; background:#eadaf2; color:#4a154b; border-radius:4px; border:none;">🧠 Pensadero</button>
+                <button onclick="switchTab('relaciones')" class="tab-btn" style="font-size: 10px; padding: 5px; background:#eadaf2; color:#4a154b; border-radius:4px; border:none;">🔗 Relaciones</button>
+            </div>
+            <div id="tab-content" style="font-size:12px; color:#333; line-height:1.5; font-style:italic;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- PANEL DIRECTOR -->
+<div style="width: 100%; max-width: 650px; margin-top: 30px; background: #222; border: 3px solid #ff3333; border-radius: 12px; padding: 15px; color: white;">
+  <div style="font-weight: bold; color: #ff3333; margin-bottom: 12px;">🛠️ PANEL DEL DIRECTOR</div>
+  <div id="admin-login" style="display: flex; gap: 10px;"><input type="password" id="admin-pass" style="flex-grow: 1;"><button onclick="verificarAdmin()" style="background: #ff3333; color: white; border: none; padding: 6px 15px; cursor: pointer;">Acceder</button></div>
+  <div id="admin-controls" style="display: none;">
+    <div style="background: #111; padding: 12px; border: 2px solid #ffcc00; margin-bottom: 10px;">
+        <b style="color: #ffcc00; font-size: 11px;">📜 GESTOR DE LORE Y CROMOS:</b>
+        <select id="lore-select-cromo" style="width: 100%; margin: 5px 0;"></select>
+        <select id="lore-tipo" style="width: 100%; margin: 5px 0;"><option value="historia">Historia</option><option value="expediente">Expediente</option><option value="cartas">Cartas</option><option value="recuerdos">Recuerdos</option><option value="relaciones">Relaciones</option></select>
+        <textarea id="lore-contenido" style="width: 100%; height: 60px;"></textarea>
+        <button onclick="guardarLoreAdmin()" style="width:100%; background:#ffcc00; font-weight:bold; margin-top:5px;">Guardar Lore</button>
+        <hr>
+        <button onclick="crearCodigoEnFirebase()" style="width:48%; background:#27ae60; color:white;">Generar Código ID</button>
+        <button onclick="crearCodigoSobreEnFirebase()" style="width:48%; background:#e67e22; color:white;">Generar Sobre</button>
+        <div id="contenedor-resultado" style="display:none; background:#000; color:#ffcc00; padding:10px; margin-top:5px; text-align:center;"><b id="codigo-generado-txt"></b></div>
+    </div>
+    <div style="background: #111; padding: 12px; border: 1px solid #8a6893;">
+        <b style="color:#d4bee0;">➕ INYECTAR ALUMNO:</b>
+        <input type="text" id="nuevo-cromo-nombre" placeholder="Nombre..." style="width:100%; margin:2px 0;">
+        <input type="text" id="nuevo-cromo-imagen" placeholder="URL..." style="width:100%; margin:2px 0;">
+        <select id="nuevo-cromo-seccion" style="width:100%; margin:2px 0;"></select>
+        <button onclick="crearNuevoCromoColeccion()" style="width:100%; background:#4a154b; color:white; margin-top:5px;">Guardar Alumno</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let pegadas = 0; let totalVisibles = 126;
+  const fbDatabaseURL = "https://album-75178-default-rtdb.firebaseio.com/";
+  let miIdAlbum = ""; let filtroActual = "todo"; let cromosPegadosIds = new Set();
+  let cromosRepetidosCantidades = {}; let stringGlobalRepetidas = ""; let esenciasMagicas = 0;
+  let temporizadorJuego = null; let juegoIncognitaId = ""; let juegoTerminadoEnTurno = false;
+  let imagenesBaseDatos = {};
+  let seccionesConfig = { "Gryffindor": { color: "#7f0909", deco: "🦁" }, "Slytherin": { color: "#0d6217", deco: "🐍" }, "Hufflepuff": { color: "#ffcc00", deco: "🦡" }, "Ravenclaw": { color: "#003366", deco: "🦅" }, "Azkaban": { color: "#1a1a1a", deco: "⛓️" } };
+
+  const infoCromos = { "1": "Merlín", "2": "Cornelius Agripa", "3": "Elfrida Clagg", "4": "Grogan Stump", "5": "Gulliver Pokeby", "6": "Glanmore Peakes", "7": "Hesper Starky", "8": "Derwent Shimpling", "9": "Gunhilda De Gorsemoor", "10": "Burdock Muldoon", "11": "Herpo El Loco", "12": "Merwyn El Malicioso", "13": "Andros El Invensible", "14": "Fulbert El Miedoso", "15": "Paracelso", "16": "Cliodna", "17": "Morgan Lee Fay", "18": "Uric El Chiflado", "19": "Newt Scamander", "20": "Wendelin La Rara", "21": "Lord Stoddard Withers", "22": "Cirse", "23": "Glenda Chittock", "24": "Adalbert Waffling", "25": "Perpetua Fancourt", "26": "Almeric Sawbridge", "27": "Mirabella Plunkett", "28": "Tilly Toke", "29": "Archibald Alderton", "30": "Artemisia Lufkin", "31": "Balfour Blane", "32": "Bridget Wenlock", "33": "Beaumont Marjoribanks", "34": "Donaghan Tremlett", "35": "Bowman Wright", "36": "Joscelind Wadcock", "37": "Cassandra Vablatsky", "38": "Chauncey Oldridge", "39": "Gwenog Jones", "40": "Carlotta Pinkstone", "41": "Godric Gryffindor", "42": "Crispín Cronk", "43": "Cyprian Youdle", "44": "Devlin Whitehorn", "45": "Dunbar Oglethorpe", "46": "Miranda Goshawk", "47": "Edgar Stroulger", "48": "Salazar Slytherin", "49": "Elladora Ketteridge", "50": "Musidora Barkwith", "51": "Ethelred el Siempre Listo", "52": "Felix Summerbee", "53": "Greta Catchlove", "54": "Gaspard Shingleton", "55": "Honoria Nutcombe", "56": "Gideon Crumb", "57": "Gifford Ollerton", "58": "Glover Hipworth", "59": "Gregory El Adulador", "60": "Laverne de Montmorency", "61": "Havelock Sweeting", "62": "Ignatia Wildsmith", "63": "Herman Wintringham", "64": "Jocunda Sykes", "65": "Gondoline Oliphant", "66": "Flavius Belby", "67": "Justus Pilliwickle", "68": "Kirley Duke McCormack", "69": "Bertie Bott", "70": "Leopoldina Smethwyck", "71": "Maeva Queen", "72": "Helga Hufflepuff", "73": "Mopsus", "74": "Montague Knightley", "75": "Mungo Bonham", "76": "Myron Wagtail", "77": "Norvel Twonk", "78": "Orsino Thruston", "79": "Oswald Beamish", "80": "Beatrix Bloxam", "81": "Quong Po", "82": "Rowena Ravenclaw", "83": "Roderick Plumpton", "84": "Roland Kegg", "85": "Blenheim Stalk", "86": "Dorcas Wellbeloved", "87": "Thaddeus Thurkell", "88": "Celestina Warbeck", "89": "Alberta Toothill", "90": "Sacharissa Tugwood", "91": "Wilfred Elphick", "92": "Xavier Rastrick", "93": "Heathcote Barbary", "94": "Merton Graves", "95": "Yardley Platt", "96": "Hengist De Woodcroft", "97": "Alberic Grunnion", "98": "Dymphna Furmage", "99": "Daisy Dodderidge", "100": "Harry Potter", "101": "Albus Dumbledore", "102": "Sir Herbert varney", "103": "Amarillo lestoat", "104": "Lady carmilla sanguina", "105": "Blodwyn bludd", "106": "Conde Vlad Drácula", "107": "Babayaga", "108": "La reina maladora grymm", "109": "Leticia somnolens", "110": "Vieja madre Hubbard", "111": "Cordelia misericordia", "112": "Bran el sediento de sangre", "113": "Cíclope", "114": "Goliath", "115": "Morholt", "116": "Hengist de upper Barton", "117": "Eargit el feo", "118": "Alguff el horroroso", "119": "Ug el falton", "120": "Urg el sucio", "121": "Gringott", "122": "El galés verde común", "123": "Hebrido negro", "124": "Colacuerno húngaro", "125": "Longhorn rumano", "126": "Ridgeback noruego", "401": "Diario de Tom Ryddle", "402": "Anillo de Sorvolo Gaunt", "403": "Guardapelo de Slytherin", "404": "Copa de Hufflepuff", "405": "Diadema de Ravenclaw", "406": "Nagini", "407": "Harry Potter (Horrocrux)", "501": "Varita de Saúco", "502": "Piedra de la Resurrección", "503": "Capa de Invisibilidad" };
+  const linksPostimagesFijos = { "1": "https://i.postimg.cc/R3GqhsDv/1.jpg", "2": "https://i.postimg.cc/kVwDG1pq/2.jpg", "3": "https://i.postimg.cc/WF3zkGBc/3.jpg", "4": "https://i.postimg.cc/MMTHQ7h4/4.jpg", "5": "https://i.postimg.cc/ZBRnd8GT/5.jpg", "6": "https://i.postimg.cc/tZTJx3KC/6.jpg", "7": "https://i.postimg.cc/FdRzLyMK/7.jpg", "8": "https://i.postimg.cc/MMTHQ7CT/8.jpg", "9": "https://i.postimg.cc/WF3zkGBJ/9.jpg", "10": "https://i.postimg.cc/tZMTt1bg/10.jpg", "11": "https://i.postimg.cc/MMFTbcwc/11.jpg", "12": "https://i.postimg.cc/LYbXBqSg/12.jpg", "13": "https://i.postimg.cc/9RnMt429/13.jpg", "14": "https://i.postimg.cc/cgbHMKWB/14.jpg", "15": "https://i.postimg.cc/LYbXBqSx/15.jpg", "16": "https://i.postimg.cc/cgbHMKWz/16.jpg", "17": "https://i.postimg.cc/q667mkBx/17.jpg", "18": "https://i.postimg.cc/RJJ0PMCg/18.jpg", "19": "https://i.postimg.cc/cttJDs1k/19.jpg", "20": "https://i.postimg.cc/zHHfdJDQ/20.jpg", "21": "https://i.postimg.cc/Pvvq6tfB/21.jpg", "22": "https://i.postimg.cc/tnngrXCQ/22.jpg", "23": "https://i.postimg.cc/q667mkMH/23.jpg", "24": "https://i.postimg.cc/644QH95N/24.jpg", "25": "https://i.postimg.cc/N220Ngfs/25.jpg", "26": "https://i.postimg.cc/p55d02XL/26.jpg", "27": "https://i.postimg.cc/6T8T6hV4/27.jpg", "28": "https://i.postimg.cc/4nYn41vh/28.jpg", "29": "https://i.postimg.cc/bdZdYR01/29.jpg", "30": "https://i.postimg.cc/4nYn41vQ/30.jpg", "31": "https://i.postimg.cc/Yjvj2xN8/31.jpg", "32": "https://i.postimg.cc/0rzr5CGc/32.jpg", "33": "https://i.postimg.cc/1484RK0b/33.jpg", "34": "https://i.postimg.cc/yWDW6TXq/34.jpg", "35": "https://i.postimg.cc/yW2xDSnb/35.jpg", "36": "https://i.postimg.cc/dDg3hTnp/36.jpg", "37": "https://i.postimg.cc/t78JsVDK/37.jpg", "38": "https://i.postimg.cc/K4Cj1gJX/38.jpg", "39": "https://i.postimg.cc/mhKkPF8R/39.jpg", "40": "https://i.postimg.cc/xqB8Xbt2/40.jpg", "41": "https://i.postimg.cc/Rq2hWnXC/41.jpg", "42": "https://i.postimg.cc/kDLG2tfg/42.jpg", "43": "https://i.postimg.cc/mhKkPF8t/43.jpg", "44": "https://i.postimg.cc/hhNvX7pJ/44.jpg", "45": "https://i.postimg.cc/xcHCMT4j/45.jpg", "46": "https://i.postimg.cc/vc9BfHNm/46.jpg", "47": "https://i.postimg.cc/4mtdVNSn/47.jpg", "48": "https://i.postimg.cc/HV5xXshV/48.jpg", "49": "https://i.postimg.cc/Whr3gbHD/49.jpg", "50": "https://i.postimg.cc/TpmwgY4W/50.jpg", "51": "https://i.postimg.cc/VdM6nLVX/51.jpg", "52": "https://i.postimg.cc/9rTMZFnT/52.jpg", "53": "https://i.postimg.cc/dLd1rtx2/53.jpg", "54": "https://i.postimg.cc/jLN5PdFh/54.jpg", "55": "https://i.postimg.cc/1f6tw5jH/55.jpg", "56": "https://i.postimg.cc/PPZxYrRK/56.jpg", "57": "https://i.postimg.cc/gnRJ8kTM/57.jpg", "58": "https://i.postimg.cc/FY4KZ5Mb/58.jpg", "59": "https://i.postimg.cc/68XQ0Jkd/59.jpg", "60": "https://i.postimg.cc/5XVt3dhm/60.jpg", "61": "https://i.postimg.cc/nXJLkbyT/61.jpg", "62": "https://i.postimg.cc/ZWSqctG7/62.jpg", "63": "https://i.postimg.cc/LJpsTKc0/63.jpg", "64": "https://i.postimg.cc/87SCHQ23/64.jpg", "65": "https://i.postimg.cc/YvHS3K5Z/65.jpg", "66": "https://i.postimg.cc/9Dhfp56v/66.jpg", "67": "https://i.postimg.cc/sMr2cCFr/67.jpg", "68": "https://i.postimg.cc/NKc04vht/68.jpg", "69": "https://i.postimg.cc/75kLVrvw/69.jpg", "70": "https://i.postimg.cc/87mzXXGx/70.jpg", "71": "https://i.postimg.cc/YvzCDD7J/71.jpg", "72": "https://i.postimg.cc/yDy8ppBH/72.jpg", "73": "https://i.postimg.cc/9DYQggV2/73.jpg", "74": "https://i.postimg.cc/Wdw1YYjs/74.jpg", "75": "https://i.postimg.cc/217S99mj/75.jpg", "76": "https://i.postimg.cc/fVfRqqZb/76.jpg", "77": "https://i.postimg.cc/tsN4vvyY/77.jpg", "78": "https://i.postimg.cc/CRsxrrY5/78.jpg", "79": "https://i.postimg.cc/TKJ3NNGK/79.jpg", "80": "https://i.postimg.cc/bZ9wVV82/80.jpg", "81": "https://i.postimg.cc/hX1tZZgd/81.jpg", "82": "https://i.postimg.cc/FYVHCCmc/82.jpg", "83": "https://i.postimg.cc/87mzXXDL/83.jpg", "84": "https://i.postimg.cc/cK14p74C/84.jpg", "85": "https://i.postimg.cc/R3CVk1VN/85.jpg", "86": "https://i.postimg.cc/HJWsq0sc/86.jpg", "87": "https://i.postimg.cc/CZML3CLf/87.jpg", "88": "https://i.postimg.cc/Z9YKGPKd/88.jpg", "89": "https://i.postimg.cc/hJ4Pk8Pb/89.jpg", "90": "https://i.postimg.cc/v18HJ7Hz/90.jpg", "91": "https://i.postimg.cc/GB3hWPhK/91.jpg", "92": "https://i.postimg.cc/WDpbBmb5/92.jpg", "93": "https://i.postimg.cc/qtBMPcMF/93.jpg", "94": "https://i.postimg.cc/Z9YKGPKg/94.jpg", "95": "https://i.postimg.cc/VSsLx9Lp/95.jpg", "96": "https://i.postimg.cc/PL6rTLPM/96.jpg", "97": "https://i.postimg.cc/cKD40KrD/97.jpg", "98": "https://i.postimg.cc/v1PHb1cq/98.jpg", "99": "https://i.postimg.cc/94xFC4rN/99.jpg", "100": "https://i.postimg.cc/cKD40Krb/100.jpg", "101": "https://i.postimg.cc/Lqy62qnc/101.jpg", "102": "https://i.postimg.cc/jdsd02Bj/102.jpg", "103": "https://i.postimg.cc/dtqtP3g1/103.jpg", "104": "https://i.postimg.cc/ZKTKtnXC/104.jpg", "105": "https://i.postimg.cc/0282Rjhr/105.jpg", "106": "https://i.postimg.cc/ncHcbrNs/106.jpg", "107": "https://i.postimg.cc/kXX9YZtJ/107.jpg", "108": "https://i.postimg.cc/bNN8VM2J/108.jpg", "109": "https://i.postimg.cc/WbbjYKJ1/109.jpg", "110": "https://i.postimg.cc/X7731hyv/110.jpg", "111": "https://i.postimg.cc/gkkdt56x/111.jpg", "112": "https://i.postimg.cc/3JJ7f6Dy/112.jpg", "113": "https://i.postimg.cc/zXX52MRb/113.jpg", "114": "https://i.postimg.cc/bNN8VM2n/114.jpg", "115": "https://i.postimg.cc/m22RpqF7/115.jpg", "116": "https://i.postimg.cc/VLL1ZTbj/116.jpg", "117": "https://i.postimg.cc/X7731hyf/117.jpg", "118": "https://i.postimg.cc/fTTZqF07/118.jpg", "119": "https://i.postimg.cc/TYYGNSWq/119.jpg", "120": "https://i.postimg.cc/X7731hyg/120.jpg", "121": "https://i.postimg.cc/zXX52MRj/121.jpg", "122": "https://i.postimg.cc/yYYBp5Sv/122.jpg", "123": "https://i.postimg.cc/tCCyvfVB/123.jpg", "124": "https://i.postimg.cc/m22RpqFj/124.jpg", "125": "https://i.postimg.cc/m2X4vwQY/125.jpg", "126": "https://i.postimg.cc/Kvqb6Nn7/126.jpg", "401": "https://i.postimg.cc/Hk1CQS0p/IMG-20260611-WA0022.jpg", "402": "https://i.postimg.cc/Cxvb7sHD/IMG-20260611-WA0108.jpg", "403": "https://i.postimg.cc/XY29Lkc9/IMG-20260611-WA0106.jpg", "404": "https://i.postimg.cc/0yt7n0dD/IMG-20260611-WA0107.jpg", "405": "https://i.postimg.cc/bw61g9Ht/IMG-20260611-WA0109.jpg", "406": "https://i.postimg.cc/ZnkhVVkx/IMG-20260611-WA0025.jpg", "407": "https://i.postimg.cc/RF5PY8FN/IMG-20260611-WA0026.jpg", "501": "https://i.postimg.cc/bNN8VM2J/108.jpg", "502": "https://i.postimg.cc/WbbjYKJ1/109.jpg", "503": "https://i.postimg.cc/X7731hyv/110.jpg" };
+
+  window.onload = async function() {
+    dibujarEstructuraEspeciales126();
+    await inicializarSeccionesFirebase();
+    escucharEventosYRealtime();
+    if(localStorage.getItem('orion_user_name_id')) {
+        miIdAlbum = localStorage.getItem('orion_user_name_id');
+        mostrarInterfazAlumnoActivo();
+    }
+  };
+
+  async function inicializarSeccionesFirebase() {
+    try {
+        const response = await fetch(fbDatabaseURL + "secciones_config.json");
+        const data = await response.json();
+        const azkabanDefault = { "Azkaban": { color: "#1a1a1a", deco: "⛓️" } };
+        await fetch(fbDatabaseURL + "secciones_config.json", { method: 'PATCH', body: JSON.stringify(azkabanDefault) });
+        const prisioneros = [ {n: "Cris DelaCour", i: "https://i.postimg.cc/Hk1CQS0p/WA0022.jpg", s: "Azkaban"}, {n: "Fernando Greengrass", i: "https://i.postimg.cc/Cxvb7sHD/WA0108.jpg", s: "Azkaban"}, {n: "Ana Black", i: "https://i.postimg.cc/XY29Lkc9/WA0106.jpg", s: "Azkaban"}, {n: "Gabo Sayre", i: "https://i.postimg.cc/0yt7n0dD/WA0107.jpg", s: "Azkaban"}, {n: "Odette Salvatore", i: "https://i.postimg.cc/bw61g9Ht/WA0109.jpg", s: "Azkaban"} ];
+        for(let i=0; i<prisioneros.length; i++) { await fetch(fbDatabaseURL + "cromos_extra/" + (300+i) + ".json", { method: 'PUT', body: JSON.stringify({ nombre: prisioneros[i].n, url: prisioneros[i].i, seccion: prisioneros[i].s }) }); }
+        if(data) { seccionesConfig = {...seccionesConfig, ...data}; }
+        renderizarSeccionesDinamicas(); actualizarSelectoresSecciones();
+        await cargarCromosDinamicosDesdeNube();
+    } catch(e) { console.error(e); }
+  }
+
+  function dibujarEstructuraEspeciales126() {
+    const grid101 = document.getElementById('grid-especiales-101');
+    const gridHorro = document.getElementById('grid-horrocruxes');
+    const gridReli = document.getElementById('grid-reliquias');
+    Object.keys(infoCromos).forEach(id => {
+        const num = parseInt(id); const card = crearHtmlCardSlot(id, infoCromos[id]);
+        if(num >= 401 && num <= 407) gridHorro.insertAdjacentHTML('beforeend', card);
+        else if(num >= 501 && num <= 503) gridReli.insertAdjacentHTML('beforeend', card);
+        else if(num >= 102 && num <= 106) document.getElementById('grid-vampiros').insertAdjacentHTML('beforeend', card);
+        else if(num >= 107 && num <= 111) document.getElementById('grid-arpias').insertAdjacentHTML('beforeend', card);
+        else if(num >= 112 && num <= 116) document.getElementById('grid-gigantes').insertAdjacentHTML('beforeend', card);
+        else if(num >= 117 && num <= 121) document.getElementById('grid-duendes').insertAdjacentHTML('beforeend', card);
+        else if(num >= 122 && num <= 126) document.getElementById('grid-dragones').insertAdjacentHTML('beforeend', card);
+        else if(num <= 101) grid101.insertAdjacentHTML('beforeend', card);
+    });
+    rellenarSelectorAdmin();
+  }
+
+  function crearHtmlCardSlot(id, nombre) {
+    return `<div id="slot-${id}" onclick="abrirZoom('${id}')" style="width:100%; max-width:160px; height:220px; background:rgba(255,255,255,0.4); border:2px dashed #a282a9; border-radius:12px; padding:8px; text-align:center; position:relative; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;"><div style="position:absolute; top:-5px; right:-5px; background:#a282a9; color:white; font-size:9px; padding:2px 5px; border-radius:8px;">N° ${id}</div><div id="fig-shape-${id}" style="width:90px; height:110px; margin:15px auto 5px auto; background:#dcd1e0; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center;"><span id="icon-${id}">?</span></div><div style="font-size:11px; font-weight:bold; color:#4a154b; height:32px; display:flex; align-items:center; justify-content:center;">${nombre}</div><button style="width:100%; font-size:9px; background:#2c0c2e; color:white; border:none; padding:3px; font-weight:bold;">📜 LORE</button></div>`;
+  }
+
+  async function canjearCodigoSobreOnline() {
+    const cod = document.getElementById('codigo-sobre-input').value.trim().toUpperCase(); if(!cod) return;
+    const res = await fetch(fbDatabaseURL + "codigos_sobres/" + cod + ".json");
+    const data = await res.json();
+    if(!data || data.usado) return alert("Código inválido.");
+    await fetch(fbDatabaseURL + "codigos_sobres/" + cod + "/usado.json", { method: 'PUT', body: 'true' });
+    document.getElementById('codigo-sobre-input').value = ""; playSound('sobre'); procesarDificultadSobre();
+  }
+
+  async function procesarDificultadSobre() {
+    let elegidos = []; const todasKeys = Object.keys(infoCromos).filter(k => parseInt(k) <= 126);
+    for(let i=0; i<3; i++) {
+        let esLegendario = Math.random() < 0.015;
+        let id = esLegendario ? (Math.random() < 0.5 ? "100" : "101") : todasKeys[Math.floor(Math.random() * todasKeys.length)];
+        elegidos.push(id.toString());
+    }
+    for(const id of elegidos) {
+        if(cromosPegadosIds.has(id)) {
+            let n = (cromosRepetidosCantidades[id] || 0) + 1;
+            await fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: JSON.stringify(n) });
+        } else {
+            await fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: 'true' });
+            aplicarPegadoVisual(id, false);
+        }
+    }
+    const resDiv = document.getElementById('resultado-sobre'); resDiv.style.display = 'block';
+    resDiv.innerHTML = `🎉 ¡Abierto! ${elegidos.join(" | ")}`; cargarRepetidasDesdeNube();
+  }
+
+  async function transmutarRepetidasPorSobre() {
+    const ahora = Date.now(); const lastRes = await fetch(fbDatabaseURL + "last_recycle/" + miIdAlbum + ".json");
+    const last = await lastRes.json() || 0;
+    if(ahora - last < 21600000) return alert("El caldero está frío.");
+    let totalRep = 0; Object.keys(cromosRepetidosCantidades).forEach(id => { if(cromosRepetidosCantidades[id]>0) totalRep += cromosRepetidosCantidades[id]; });
+    if(totalRep < 3) return alert("Necesitas 3 repetidas.");
+    let restados = 0;
+    for(let id in cromosRepetidosCantidades) {
+        while(cromosRepetidosCantidades[id]>0 && restados < 3) {
+            cromosRepetidosCantidades[id]--; restados++;
+            await fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + "/" + id + ".json", { method: 'PUT', body: JSON.stringify(cromosRepetidosCantidades[id]) });
+        }
+    }
+    await fetch(fbDatabaseURL + "last_recycle/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(ahora) });
+    alert("Transmutación lista..."); procesarDificultadSobre();
+  }
+
+  function aplicarPegadoVisual(id, alertar) {
+    const sid = id.toString(); const slot = document.getElementById('slot-' + sid);
+    cromosPegadosIds.add(sid); if(!slot) return;
+    slot.style.border = "2px solid #ffcc00"; slot.style.background = "#fff8e7";
+    let src = linksPostimagesFijos[sid] || imagenesBaseDatos[sid] || "";
+    document.getElementById('icon-' + sid).innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit: cover;">`;
+    pegadas = cromosPegadosIds.size; document.getElementById('progreso-texto').innerText = `${pegadas} / ${totalVisibles}`;
+    if(alertar) alert("¡Cromo pegado!");
+  }
+
+  async function proponerIntercambio() {
+      const otro = document.getElementById('intercambio-destinatario').value.trim().replace(/[\.\#\$\[\]]/g, "_");
+      const cid = document.getElementById('intercambio-cromo-id').value.trim();
+      if(!otro || !cid) return alert("Datos incompletos."); if(!cromosPegadosIds.has(cid)) return alert("No posees ese cromo.");
+      const hoy = new Date().toISOString().split('T')[0];
+      const cRes = await fetch(fbDatabaseURL + "intercambios_count/" + miIdAlbum + "/" + hoy + ".json");
+      if(await cRes.json() >= 3) return alert("Límite diario.");
+      await fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + "/" + cid + ".json", { method: 'DELETE' });
+      await fetch(fbDatabaseURL + "usuarios/" + otro + "/" + cid + ".json", { method: 'PUT', body: 'true' });
+      await fetch(fbDatabaseURL + "intercambios_count/" + miIdAlbum + "/" + hoy + ".json", { method: 'PUT', body: 'true' });
+      alert("¡Enviado!"); location.reload();
+  }
+
+  // MINIJUEGO 10 ESENCIAS
+  function intentarAbrirJuegoDiario() {
+    const hoy = new Date().toISOString().split('T')[0];
+    if(localStorage.getItem(`orion_game_${hoy}`)) return alert("Ya jugaste.");
+    document.getElementById('btn-iniciar-juego-diario').style.display = 'none';
+    document.getElementById('juego-adivina').style.display = 'block';
+    iniciarJuegoAdivina(hoy);
+  }
+
+  function iniciarJuegoAdivina(hoy) {
+    juegoTerminadoEnTurno = false; const keys = Object.keys(infoCromos);
+    juegoIncognitaId = keys[Math.floor(Math.random() * keys.length)];
+    document.getElementById('juego-id-incognita').innerText = juegoIncognitaId;
+    let opts = [juegoIncognitaId]; while(opts.length < 3) { let r = keys[Math.floor(Math.random()*keys.length)]; if(!opts.includes(r)) opts.push(r); }
+    opts.sort(() => Math.random() - 0.5);
+    const cont = document.getElementById('opciones-juego-adivina'); cont.innerHTML = "";
+    opts.forEach(id => { cont.insertAdjacentHTML('beforeend', `<button onclick="validarRespuesta('${id}', '${hoy}')" style="background:#4a154b; color:white; margin:2px; padding:5px; font-size:10px; cursor:pointer;">${infoCromos[id]}</button>`); });
+    let t = 15; temporizadorJuego = setInterval(() => { t--; document.getElementById('reloj-cuenta-regresiva-juego').innerText = t+"s"; if(t<=0){ clearInterval(temporizadorJuego); alert("Tiempo fuera."); location.reload(); } }, 1000);
+  }
+
+  async function validarRespuesta(id, hoy) {
+    if(juegoTerminadoEnTurno) return; juegoTerminadoEnTurno = true; clearInterval(temporizadorJuego);
+    localStorage.setItem(`orion_game_${hoy}`, "true");
+    if(id === juegoIncognitaId) {
+        esenciasMagicas += 10; await fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(esenciasMagicas) });
+        alert("¡Correcto! +10 esencias.");
+    } else alert("Incorrecto.");
+    location.reload();
+  }
+
+  // ADMIN
+  function verificarAdmin() { if(document.getElementById('admin-pass').value === "orion2026") { document.getElementById('admin-controls').style.display = 'block'; document.getElementById('admin-login').style.display='none'; } }
+  
+  async function guardarLoreAdmin() {
+      const id = document.getElementById('lore-select-cromo').value; const tipo = document.getElementById('lore-tipo').value; const txt = document.getElementById('lore-contenido').value.trim();
+      if(!id || !txt) return; await fetch(`${fbDatabaseURL}lore/${id}/${tipo}.json`, { method: 'PUT', body: JSON.stringify(txt) }); alert("Lore guardado.");
+  }
+
+  function crearCodigoEnFirebase() {
+    const id = document.getElementById('lore-select-cromo').value; const cod = "ORION-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+    fetch(fbDatabaseURL + "codigos/" + cod + ".json", { method: 'PUT', body: JSON.stringify({ cromo_id: id, usado: false }) });
+    document.getElementById('contenedor-resultado').style.display = 'block'; document.getElementById('codigo-generado-txt').innerText = cod;
+  }
+
+  function crearCodigoSobreEnFirebase() {
+    const cod = "ORION-SOBRE-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+    fetch(fbDatabaseURL + "codigos_sobres/" + cod + ".json", { method: 'PUT', body: JSON.stringify({ usado: false }) });
+    document.getElementById('contenedor-resultado').style.display = 'block'; document.getElementById('codigo-generado-txt').innerText = cod;
+  }
+
+  // FUNCIONES DE APOYO (REUTILIZADAS SIN CAMBIOS)
+  function identificarAlumno() { let i = document.getElementById('nombre-alumno-input').value.trim(); if(!i) return; miIdAlbum = i.replace(/[\.\#\$\[\]]/g, "_"); localStorage.setItem('orion_user_name_id', miIdAlbum); mostrarInterfazAlumnoActivo(); }
+  async function mostrarInterfazAlumnoActivo() { document.getElementById('seccion-login-alumno').style.display = 'none'; document.getElementById('panel-alumno-activo').style.display = 'block'; document.getElementById('nombre-perfil-txt').innerText = miIdAlbum; fetch(fbDatabaseURL + "lista_alumnos_activos/" + miIdAlbum + ".json", { method: 'PUT', body: 'true' }); fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json").then(r=>r.json()).then(c => { esenciasMagicas = c || 0; document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas; }); await cargarProgresoDesdeNube(); }
+  async function cargarProgresoDesdeNube() { pegadas = 0; cromosPegadosIds.clear(); const res = await fetch(fbDatabaseURL + "usuarios/" + miIdAlbum + ".json"); const g = await res.json(); if(g) { Object.keys(g).forEach(id => { if(g[id] && infoCromos[id]) aplicarPegadoVisual(id, false); }); } }
+  function rellenarSelectorAdmin() { const s = document.getElementById('lore-select-cromo'); const s2 = document.getElementById('select-cromo'); Object.keys(infoCromos).forEach(id => { const o = document.createElement('option'); o.value = id; o.innerText = `N° ${id} - ${infoCromos[id]}`; s.appendChild(o); if(s2) s2.appendChild(o.cloneNode(true)); }); }
+  function cerrarSesion() { localStorage.removeItem('orion_user_name_id'); location.reload(); }
+  function cerrarModal() { document.getElementById('modal-zoom').style.display = 'none'; }
+  function escucharEventosYRealtime() { setInterval(() => { fetch(fbDatabaseURL + "lista_alumnos_activos.json").then(r=>r.json()).then(d => { document.getElementById('cant-conectados').innerText = d ? Object.keys(d).length : 0; }); }, 5000); }
+  async function cargarCromosDinamicosDesdeNube() { const r = await fetch(fbDatabaseURL + "cromos_extra.json"); const d = await r.json(); if(d) { Object.keys(d).forEach(id => { if(!infoCromos[id]) { infoCromos[id] = d[id].nombre; imagenesBaseDatos[id] = d[id].url; const slot = crearHtmlCardSlot(id, d[id].nombre); const grid = document.getElementById('grid-casa-' + d[id].seccion.toLowerCase()); if(grid) { grid.querySelector('.txt-vacio').style.display='none'; grid.insertAdjacentHTML('beforeend', slot); } } if(cromosPegadosIds.has(id.toString())) aplicarPegadoVisual(id, false); }); } }
+  function renderizarSeccionesDinamicas() { const c = document.getElementById('contenedor-secciones-dinamicas'); Object.keys(seccionesConfig).forEach(id => { if(["Gryffindor","Slytherin","Hufflepuff","Ravenclaw"].includes(id)) return; const s = seccionesConfig[id]; c.insertAdjacentHTML('beforeend', `<div id="wrapper-${id}"><div style="padding:12px; background:${s.color}; color:white; text-align:center; font-weight:bold;">${s.deco} ${id.toUpperCase()}</div><div id="grid-casa-${id.toLowerCase()}" style="padding:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px;"><p class="txt-vacio" style="grid-column:span 3; text-align:center; color:#888;">Vacío.</p></div></div>`); }); }
+  function actualizarSelectoresSecciones() { const s = document.getElementById('nuevo-cromo-seccion'); Object.keys(seccionesConfig).forEach(id => { const o = document.createElement('option'); o.value = id; o.innerText = id; s.appendChild(o); }); }
+  let currentLoreId = ""; async function switchTab(t) { const c = document.getElementById('tab-content'); const r = await fetch(`${fbDatabaseURL}lore/${currentLoreId}/${t}.json`); const d = await r.json(); c.innerText = d || "Sin registros."; }
+  function abrirZoom(id) { if(!cromosPegadosIds.has(id.toString())) return alert("Consíguelo primero."); currentLoreId = id; document.getElementById('modal-zoom').style.display='flex'; document.getElementById('modal-nombre').innerText = infoCromos[id]; let src = linksPostimagesFijos[id] || imagenesBaseDatos[id] || ""; document.getElementById('modal-content-img').innerHTML = `<img src="${src}" style="max-height:100%; max-width:100%;">`; switchTab('historia'); }
+  function cargarRepetidasDesdeNube() { fetch(fbDatabaseURL + "repetidas/" + miIdAlbum + ".json").then(r=>r.json()).then(d => { cromosRepetidosCantidades = d || {}; if(d) { let s = []; Object.keys(d).forEach(id => { if(d[id]>0) s.push(`${id}(${d[id]}x)`); }); document.getElementById('contenedor-repetidas-alumno').style.display = s.length ? 'block':'none'; document.getElementById('lista-repetidas-txt').innerText = s.join(" | "); } }); }
+</script>
+</body>
+</html>
