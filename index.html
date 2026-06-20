@@ -858,9 +858,9 @@
     deshabilitarOpcionesJuego();
 
     if(elegido === juegoIncognitaId) {
-        esenciasMagicas += 5; document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
+        esenciasMagicas += 10; document.getElementById('polvo-esencia-txt').innerText = esenciasMagicas;
         fetch(fbDatabaseURL + "esencias/" + miIdAlbum + ".json", { method: 'PUT', body: JSON.stringify(esenciasMagicas) });
-        document.getElementById('feedback-juego').innerHTML = "<span style='color:green; font-weight:bold;'>✨ ¡Excelente! Respuesta correcta. Ganaste +5 Esencias Mágicas.</span>";
+        document.getElementById('feedback-juego').innerHTML = "<span style='color:green; font-weight:bold;'>✨ ¡Excelente! Respuesta correcta. Ganaste +10 Esencias Mágicas.</span>";
     } else {
         document.getElementById('feedback-juego').innerHTML = `<span style='color:red; font-weight:bold;'>❌ Incorrecto. La criatura correcta era: N° ${juegoIncognitaId} (${infoCromos[juegoIncognitaId]}).</span>`;
     }
@@ -886,9 +886,20 @@
   // FIN CAMBIO
 
   function transmutarRepetidasPorSobre() {
-    const fechaHoy = new Date().toISOString().split('T')[0];
-    const llaveCaldero = `orion_caldero_reciclaje_${miIdAlbum}_${fechaHoy}`;
-    if(localStorage.getItem(llaveCaldero)) { alert("🧪 El caldero está apagado. Ya realizaste tu transmutación diaria."); return; }
+    // --- NUEVO BLOQUE DE CONTROL DE 6 HORAS ---
+    const ahora = Date.now();
+    const SEIS_HORAS = 6 * 60 * 60 * 1000; // Milisegundos en 6 horas
+    const llaveCaldero = `orion_caldero_tiempo_${miIdAlbum}`;
+    const ultimaTransmutacion = localStorage.getItem(llaveCaldero);
+
+    if (ultimaTransmutacion) {
+        const tiempoPasado = ahora - parseInt(ultimaTransmutacion);
+        if (tiempoPasado < SEIS_HORAS) {
+            const tiempoRestante = SEIS_HORAS - tiempoPasado;
+            const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
+            const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+            alert(`🧪 El caldero está recuperando su calor. Podrás usarlo de nuevo en ${horas}h y ${minutos}min.`);
+            return;
 
     let totalRepetidasDisponibles = 0;
     Object.keys(cromosRepetidosCantidades).forEach(id => { if(cromosRepetidosCantidades[id] > 0) totalRepetidasDisponibles += cromosRepetidosCantidades[id]; });
