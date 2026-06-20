@@ -886,20 +886,9 @@
   // FIN CAMBIO
 
   function transmutarRepetidasPorSobre() {
-    // --- NUEVO BLOQUE DE CONTROL DE 6 HORAS ---
-    const ahora = Date.now();
-    const SEIS_HORAS = 6 * 60 * 60 * 1000; // Milisegundos en 6 horas
-    const llaveCaldero = `orion_caldero_tiempo_${miIdAlbum}`;
-    const ultimaTransmutacion = localStorage.getItem(llaveCaldero);
-
-    if (ultimaTransmutacion) {
-        const tiempoPasado = ahora - parseInt(ultimaTransmutacion);
-        if (tiempoPasado < SEIS_HORAS) {
-            const tiempoRestante = SEIS_HORAS - tiempoPasado;
-            const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
-            const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
-            alert(`🧪 El caldero está recuperando su calor. Podrás usarlo de nuevo en ${horas}h y ${minutos}min.`);
-            return;
+const fechaHoy = new Date().toISOString().split('T')[0];
+const llaveCaldero = orion_caldero_reciclaje_${miIdAlbum}_${fechaHoy};
+if(localStorage.getItem(llaveCaldero)) { alert("🧪 El caldero está apagado. Ya realizaste tu transmutación diaria."); return; }
 
     let totalRepetidasDisponibles = 0;
     Object.keys(cromosRepetidosCantidades).forEach(id => { if(cromosRepetidosCantidades[id] > 0) totalRepetidasDisponibles += cromosRepetidosCantidades[id]; });
